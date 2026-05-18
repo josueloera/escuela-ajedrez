@@ -1,0 +1,500 @@
+{
+    "tournaments": {
+        "1271": {
+            "teacher": "_v9iEnWVIJ5OpymHAAAJ",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "Qa1npx9FVntSCBI8AAAL",
+                    "name": "unooooo",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "mJO0x7zsHKs7Cp0oAAAR"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "mJO0x7zsHKs7Cp0oAAAR",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "Qa1npx9FVntSCBI8AAAL"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_1271_R1_M1",
+                    "white": "unooooo",
+                    "black": "dos",
+                    "whiteId": "Qa1npx9FVntSCBI8AAAL",
+                    "blackId": "mJO0x7zsHKs7Cp0oAAAR",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "3226": {
+            "teacher": "vsXgKFh-9bSRiyPkAAAD",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "kE0z9ZnmSCjaoFZcAAAF",
+                    "name": "uno",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "W2kogw3ONSa5o_AJAAAH"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "W2kogw3ONSa5o_AJAAAH",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "kE0z9ZnmSCjaoFZcAAAF"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_3226_R1_M1",
+                    "white": "uno",
+                    "black": "dos",
+                    "whiteId": "kE0z9ZnmSCjaoFZcAAAF",
+                    "blackId": "W2kogw3ONSa5o_AJAAAH",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "3929": {
+            "teacher": "a9XkvwRKepdaz53GAAAH",
+            "mode": "virtual",
+            "players": [],
+            "matches": [],
+            "round": 0,
+            "active": false,
+            "school": "Escuela"
+        },
+        "3943": {
+            "teacher": "rYNmUlIioU0DQcVDAAAP",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "SBiR3AwnEy4W546ZAAAH",
+                    "name": "yop",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0.5,
+                    "buchholz": 0.5,
+                    "opponents": [
+                        "SY6i95UNc9g87Dy_AAAN"
+                    ],
+                    "history": {
+                        "R1": "½"
+                    }
+                },
+                {
+                    "id": "SY6i95UNc9g87Dy_AAAN",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0.5,
+                    "buchholz": 0.5,
+                    "opponents": [
+                        "SBiR3AwnEy4W546ZAAAH"
+                    ],
+                    "history": {
+                        "R1": "½"
+                    }
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_3943_R1_M1",
+                    "white": "yop",
+                    "black": "dos",
+                    "whiteId": "SBiR3AwnEy4W546ZAAAH",
+                    "blackId": "SY6i95UNc9g87Dy_AAAN",
+                    "round": 1,
+                    "status": "finished",
+                    "result": "Tablas",
+                    "scoreWhite": 0.5,
+                    "scoreBlack": 0.5,
+                    "lastFen": "rnbqkbnr/1p1ppppp/8/p1p5/4P1P1/8/PPPP1P1P/RNBQKBNR w KQkq a6 0 3"
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "4400": {
+            "teacher": "uQsQyTjYgXiJzheFAAAD",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "ZJAoBnrF3KNn2TzGAAAF",
+                    "name": "dd",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "Uft850mxI7lcbt2SAAAJ"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "Uft850mxI7lcbt2SAAAJ",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "ZJAoBnrF3KNn2TzGAAAF"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_4400_R1_M1",
+                    "white": "dd",
+                    "black": "dos",
+                    "whiteId": "ZJAoBnrF3KNn2TzGAAAF",
+                    "blackId": "Uft850mxI7lcbt2SAAAJ",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "4644": {
+            "teacher": "UIZSZyfcbA1brEdrAAAR",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "I-GtIdayYMN_Oak4AAAT",
+                    "name": "uno",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "k07Q9Cb14pm4ahPpAAAV"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "k07Q9Cb14pm4ahPpAAAV",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "I-GtIdayYMN_Oak4AAAT"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_4644_R1_M1",
+                    "white": "uno",
+                    "black": "dos",
+                    "whiteId": "I-GtIdayYMN_Oak4AAAT",
+                    "blackId": "k07Q9Cb14pm4ahPpAAAV",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null,
+                    "lastFen": "rnbqkbnr/ppp1pppp/8/8/4p1P1/8/PPPP1P1P/RNBQKBNR w KQkq - 0 3"
+                }
+            ],
+            "round": 1,
+            "active": false,
+            "school": "Escuela"
+        },
+        "4976": {
+            "teacher": "IYAiuGvNuI_W-BTDAAAD",
+            "mode": {
+                "mode": "virtual",
+                "time": 10
+            },
+            "players": [
+                {
+                    "id": "mUaWfCQ0apfRaeNhAAAI",
+                    "name": "Bot_1",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "PY-1lcIpF_v4raO9AAAJ"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "PY-1lcIpF_v4raO9AAAJ",
+                    "name": "Bot_2",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "mUaWfCQ0apfRaeNhAAAI"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "jEqcQ67tL7XdmVtYAAAK",
+                    "name": "Bot_3",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "2NZ_EYrUh09uCLWwAAAL"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "2NZ_EYrUh09uCLWwAAAL",
+                    "name": "Bot_4",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "jEqcQ67tL7XdmVtYAAAK"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_4976_R1_M1",
+                    "white": "Bot_1",
+                    "black": "Bot_2",
+                    "whiteId": "mUaWfCQ0apfRaeNhAAAI",
+                    "blackId": "PY-1lcIpF_v4raO9AAAJ",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                },
+                {
+                    "room": "tour_4976_R1_M2",
+                    "white": "Bot_3",
+                    "black": "Bot_4",
+                    "whiteId": "jEqcQ67tL7XdmVtYAAAK",
+                    "blackId": "2NZ_EYrUh09uCLWwAAAL",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "6108": {
+            "teacher": "WE2PGuTfmcUmTlkjAAAF",
+            "mode": {
+                "mode": "virtual",
+                "time": 10
+            },
+            "players": [
+                {
+                    "id": "iOqfL8p8mCJj1zXOAAAK",
+                    "name": "Bot_1",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "9Zxo-Sv6-e5k-3ahAAAL"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "9Zxo-Sv6-e5k-3ahAAAL",
+                    "name": "Bot_2",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "iOqfL8p8mCJj1zXOAAAK"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "ZYMlWGWNdM20_1drAAAM",
+                    "name": "Bot_3",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "VZcuyqIi8ZD2ERsJAAAN"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "VZcuyqIi8ZD2ERsJAAAN",
+                    "name": "Bot_4",
+                    "avatar": "🤖",
+                    "elo": 1000,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "ZYMlWGWNdM20_1drAAAM"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_6108_R1_M1",
+                    "white": "Bot_1",
+                    "black": "Bot_2",
+                    "whiteId": "iOqfL8p8mCJj1zXOAAAK",
+                    "blackId": "9Zxo-Sv6-e5k-3ahAAAL",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                },
+                {
+                    "room": "tour_6108_R1_M2",
+                    "white": "Bot_3",
+                    "black": "Bot_4",
+                    "whiteId": "ZYMlWGWNdM20_1drAAAM",
+                    "blackId": "VZcuyqIi8ZD2ERsJAAAN",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        },
+        "7051": {
+            "teacher": "CeMPI7MPB_7NcVpJAAAD",
+            "mode": "virtual",
+            "players": [],
+            "matches": [],
+            "round": 0,
+            "active": true,
+            "school": "Escuela"
+        },
+        "7224": {
+            "teacher": "xDFaamBS_RLkks_hAAAL",
+            "mode": "virtual",
+            "players": [],
+            "matches": [],
+            "round": 0,
+            "active": true,
+            "school": "Escuela"
+        },
+        "9927": {
+            "teacher": "t1tU45G6Bl47AR8rAAAF",
+            "mode": "virtual",
+            "players": [
+                {
+                    "id": "JDdh4SWBBPHa1ewPAAAH",
+                    "name": "UUU",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "ASbFswgC3VHwlzH7AAAJ"
+                    ],
+                    "history": {}
+                },
+                {
+                    "id": "ASbFswgC3VHwlzH7AAAJ",
+                    "name": "dos",
+                    "avatar": "🦁",
+                    "elo": 400,
+                    "score": 0,
+                    "buchholz": 0,
+                    "opponents": [
+                        "JDdh4SWBBPHa1ewPAAAH"
+                    ],
+                    "history": {}
+                }
+            ],
+            "matches": [
+                {
+                    "room": "tour_9927_R1_M1",
+                    "white": "UUU",
+                    "black": "dos",
+                    "whiteId": "JDdh4SWBBPHa1ewPAAAH",
+                    "blackId": "ASbFswgC3VHwlzH7AAAJ",
+                    "round": 1,
+                    "status": "playing",
+                    "result": null,
+                    "scoreWhite": null,
+                    "scoreBlack": null
+                }
+            ],
+            "round": 1,
+            "active": true,
+            "school": "Escuela"
+        }
+    },
+    "users": {
+        "testuser": {
+            "password": "pwd",
+            "elo": 400,
+            "stars": 0,
+            "avatar": "👤",
+            "pushSubscription": null
+        }
+    }
+}

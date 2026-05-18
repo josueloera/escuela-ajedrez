@@ -1,0 +1,3128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JL Chess Escolar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟️</text></svg>">
+
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        /* ESTILOS GENERALES */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #2c3e50;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #main-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #teacher-login-view,
+        #teacher-dashboard-view,
+        #teacher-lobby-view,
+        #setup-view,
+        #student-menu-view,
+        #student-lobby-view,
+        #game-controls,
+        #board-wrapper,
+        #academy-main-menu,
+        #ranking-view,
+        #mesas-area,
+        #chat-area,
+        #final-results-view,
+        #online-header,
+        #bot-header,
+        #puzzle-header,
+        #teacher-header,
+        #library-view,
+        #academy-header {
+            display: none;
+        }
+
+        .info-card {
+            background: #34495e;
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .recent-school-pill {
+            background: #34495e;
+            border: 1px solid #3498db;
+            color: #ecf0f1;
+            border-radius: 15px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .recent-school-pill:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        #board-wrapper {
+            width: 100%;
+            max-width: 380px;
+            margin: 10px auto;
+            position: relative;
+            min-height: 300px;
+            display: none;
+        }
+
+        #board {
+            width: 100%;
+        }
+
+        #board-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+        }
+
+        .square-55d63 img {
+            pointer-events: none !important;
+        }
+
+        .classic-skin .square-55d63 img {
+            filter: none;
+        }
+
+        .artist-skin .square-55d63 img {
+            filter: drop-shadow(2px 4px 6px black) sepia(1) saturate(4) hue-rotate(10deg);
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .highlight-selected {
+            background-color: rgba(255, 235, 59, 0.7) !important;
+        }
+
+        .highlight-move {
+            background-color: rgba(255, 235, 59, 0.4) !important;
+        }
+
+        .highlight-hint::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30%;
+            height: 30%;
+            background-color: rgba(46, 204, 113, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        .highlight-capture::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 85%;
+            border: 6px solid rgba(231, 76, 60, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        button {
+            width: 90%;
+            margin: 8px auto;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-green {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-red {
+            background: #c0392b;
+            color: white;
+        }
+
+        .btn-blue {
+            background: #2980b9;
+            color: white;
+        }
+
+        .btn-purple {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .btn-yellow {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-orange {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-teal {
+            background: #1abc9c;
+            color: white;
+        }
+
+        .btn-price {
+            background: linear-gradient(45deg, #FFD700, #FDB931);
+            color: #000;
+            border: 2px solid #fff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        input,
+        select {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-size: 16px;
+            touch-action: auto !important; /* Fix focus on mobile */
+            user-select: text !important;
+        }
+
+        #clocks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #7f8c8d;
+        }
+
+        .clock-box {
+            padding: 5px 15px;
+            border-radius: 6px;
+            min-width: 90px;
+            background: #34495e;
+            color: #bdc3c7;
+        }
+
+        .clock-active {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .role-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .role-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* AVATARES FLEX */
+        .avatar-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .avatar-option.selected {
+            border-color: #f1c40f;
+            background: rgba(241, 196, 15, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* MODAL PRECIOS */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #2c3e50;
+            width: 95%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #f1c40f;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            text-align: left;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #e74c3c;
+            z-index: 2001;
+        }
+
+        .price-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #7f8c8d;
+            position: relative;
+        }
+
+        .price-title {
+            color: #f1c40f;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .price-cost {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .price-features ul {
+            padding-left: 20px;
+            margin: 0;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .btn-buy {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            animation: pulse 2s infinite;
+            border: 2px solid white;
+        }
+
+        .oferta-tag {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-weight: bold;
+        }
+
+        /* Tablas y Listas */
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .standings-table th,
+        .standings-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #7f8c8d;
+        }
+
+        .standings-table th {
+            color: #f1c40f;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .podium-gold {
+            background: linear-gradient(90deg, #FFD700, #FDB931);
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .podium-silver {
+            background: linear-gradient(90deg, #E0E0E0, #BDBDBD);
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .podium-bronze {
+            background: linear-gradient(90deg, #CD7F32, #A0522D);
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .match-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border: 1px solid #7f8c8d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .match-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .manual-result-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .btn-res {
+            padding: 8px 2px;
+            font-size: 10px;
+            width: 100%;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* CHAT SIDEBAR LAYOUT */
+        #chat-area {
+            display: flex !important;
+            flex-direction: row;
+            height: 300px;
+            gap: 10px;
+        }
+
+        #chat-left-col {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-right-col {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 5px;
+            overflow-y: auto;
+            border: 1px solid #7f8c8d;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .online-user-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+    <!-- SOCKET.IO CDN (Más compatible con Render/AppsGeyser) -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+
+    
+
+    <script>
+        // Verificación de Carga (Silenciosa)
+        window.addEventListener('load', function () {
+            if (typeof io === 'undefined') {
+                console.error("Critical: Socket.IO failed to load.");
+            }
+        });
+    </script>
+
+    <script>
+
+        // --- LOGICA DE COMPRA SECUENCIAL (V15.7) ---
+        function abrirPrecios() {
+            $('#pricing-modal').css('display', 'flex');
+            // Reiniciar botones al abrir
+            $('#btn-prem-paypal').show();
+            $('#btn-prem-wsp').hide();
+            $('#btn-light-paypal').show();
+            $('#btn-light-wsp').hide();
+        }
+
+        function cerrarPrecios() {
+            $('#pricing-modal').hide();
+            localStorage.setItem('jlChessSeenPricing', 'true');
+        }
+
+        function irAPaypal(plan) {
+            let link = (plan === 'premium') ? "https://www.paypal.com/ncp/payment/Z6E9QH8PKMTB8" : "https://www.paypal.com/ncp/payment/AV2W79HUUPMRC";
+            window.open(link, '_blank');
+
+            // Ocultar botón de PayPal y mostrar el de WhatsApp del plan correspondiente
+            if (plan === 'premium') {
+                $('#btn-prem-paypal').hide();
+                $('#btn-prem-wsp').show();
+            } else {
+                $('#btn-light-paypal').hide();
+                $('#btn-light-wsp').show();
+            }
+        }
+
+        function irAWhatsapp(plan) {
+            let mensaje = (plan === 'premium') ?
+                "Hola Josue, estoy comprando el Plan PREMIUM de JL Chess ($500 MXN). Aquí enviaré mi comprobante de pago." :
+                "Hola Josue, estoy comprando el Plan LIGHT de JL Chess ($300 MXN). Aquí enviaré mi comprobante de pago.";
+
+            var urlWsp = "https://wa.me/5216271073044?text=" + encodeURIComponent(mensaje);
+            window.open(urlWsp, '_blank');
+        }
+
+        $(document).ready(function () {
+            if (!localStorage.getItem('jlChessSeenPricing')) {
+                setTimeout(abrirPrecios, 1000);
+            }
+        });
+
+        // --- CÓDIGO JS DEL JUEGO (Mismo que versiones anteriores) ---
+        var socket = null;
+        try {
+            socket = io({
+                transports: ['websocket', 'polling']
+            });
+        } catch (e) {
+            console.error("Socket error", e);
+        }
+
+        var game = new Chess();
+        var board = null;
+        var currentMode = 'none';
+        var currentCategory = '';
+        var currentRoom = "";
+        var globalChatRoom = "";
+        var currentSchoolId = localStorage.getItem('jlSchoolId') || "";
+        var playerColor = 'w';
+        var isSpectator = false;
+        var selectedSquare = null;
+        var botTimeout = null;
+        var academyTimeouts = [];
+        var currentLessonId = null;
+        var userProfile = {
+            name: "",
+            avatar: "♟️",
+            stars: 0,
+            elo: 400,
+            skin: 'classic',
+            premiumUnlocked: false
+        };
+        const avatars = ["🦁", "🐯", "🤖", "👽", "🦄", "🐲", "🦸‍♂️", "🥷", "🐼", "🦊", "👑", "🚀"];
+        var timeWhite = 600;
+        var timeBlack = 600;
+        var timerInterval = null;
+        var selectedAvatarTemp = avatars[0];
+
+        var finalTournamentData = null;
+        var currentMatches = [];
+        var currentStandings = [];
+        var tournamentMode = 'virtual';
+
+        const piezasDB = {
+            'p': {
+                name: "Peón (P)",
+                t: "El Peón: Avanza una casilla hacia adelante. Come en diagonal.",
+                pos: '8/8/8/8/4P3/8/8/8 w - - 0 1',
+                h: ['e5']
+            },
+            'n': {
+                name: "Caballo (C)",
+                t: "El Caballo: Se mueve en forma de L. Salta sobre otras.",
+                pos: '8/8/8/4N3/8/8/8/8 w - - 0 1',
+                h: ['d3', 'f3', 'c4', 'g4', 'c6', 'g6', 'd7', 'f7']
+            },
+            'b': {
+                name: "Alfil (A)",
+                t: "El Alfil: Diagonales de su color.",
+                pos: '8/8/8/3B4/8/8/8/8 w - - 0 1',
+                h: ['a2', 'b3', 'c4', 'e6', 'f7', 'g8', 'a8', 'b7', 'c6', 'e4', 'f3', 'g2', 'h1']
+            },
+            'r': {
+                name: "Torre (T)",
+                t: "La Torre: Línea recta, horizontal o vertical.",
+                pos: '8/8/8/3R4/8/8/8/8 w - - 0 1',
+                h: ['d1', 'd2', 'd3', 'd5', 'd6', 'd7', 'd8', 'a5', 'b5', 'c5', 'e5', 'f5', 'g5', 'h5']
+            },
+            'q': {
+                name: "Dama (D)",
+                t: "La Dama: La más poderosa. Torre + Alfil.",
+                pos: '8/8/8/3Q4/8/8/8/8 w - - 0 1',
+                h: ['d1', 'd2', 'd3', 'd6', 'd7', 'd8', 'a5', 'b5', 'c5', 'e5', 'f5', 'g5', 'h5', 'a2', 'b3', 'c4', 'e6', 'f7', 'g8', 'a8', 'b7', 'c6', 'e4', 'f3', 'g2', 'h1']
+            },
+            'k': {
+                name: "Rey (R)",
+                t: "El Rey: Un paso a cualquier lado. ¡Protégelo!",
+                pos: '8/8/8/4K3/8/8/8/8 w - - 0 1',
+                h: ['d4', 'e4', 'f4', 'd5', 'f5', 'd6', 'e6', 'f6']
+            }
+        };
+        const aperturasDB = {
+            'italiana': {
+                name: "Italiana",
+                moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4'],
+                texts: ["Controlamos el centro.", "Respuesta simétrica.", "Caballo ataca.", "Defiende.", "Alfil apunta al punto débil f7."]
+            },
+            'siciliana': {
+                name: "Siciliana",
+                moves: ['e4', 'c5', 'Nf3', 'd6', 'd4', 'cxd4', 'Nxd4'],
+                texts: ["Centro.", "Lucha asimétrica.", "Caballo.", "Control.", "Rompemos el centro.", "Cambio de peones.", "Juego abierto."]
+            },
+            'pastor': {
+                name: "Pastor",
+                moves: ['e4', 'e5', 'Bc4', 'Nc6', 'Qh5', 'Nf6', 'Qxf7#'],
+                texts: ["Peón de Rey.", "Respuesta negra.", "Alfil apunta a f7.", "Caballo defiende.", "¡La Dama ataca!", "Error fatal...", "¡Jaque Mate!"]
+            },
+            'pastor': {
+                name: "Pastor",
+                moves: ['e4', 'e5', 'Bc4', 'Nc6', 'Qh5', 'Nf6', 'Qxf7#'],
+                texts: ["Peón de Rey.", "Respuesta negra.", "Alfil apunta a f7.", "Caballo defiende.", "¡La Dama ataca!", "Error fatal...", "¡Jaque Mate!"]
+            },
+            'espanola': {
+                name: "Española",
+                moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Bb5'],
+                texts: ["Salida clásica.", "Respuesta clásica.", "Caballo ataca.", "Defiende.", "Ruy López: Presión directa."]
+            },
+            'francesa': {
+                name: "Francesa",
+                moves: ['e4', 'e6', 'd4', 'd5', 'Nc3'],
+                texts: ["Peón Rey.", "Defensa sólida.", "Ocupamos el centro.", "Contraataque central.", "Desarrollo del caballo."]
+            },
+            'carokann': {
+                name: "Caro-Kann",
+                moves: ['e4', 'c6', 'd4', 'd5', 'Nc3'],
+                texts: ["Apertura.", "Soporte sólido.", "Centro fuerte.", "Desafío al centro.", "Defensa rocosa."]
+            },
+            'londres': {
+                name: "S. Londres",
+                moves: ['d4', 'd5', 'Bf4', 'Nf6', 'e3', 'c5'],
+                texts: ["Peón Dama.", "Control central.", "El Alfil de Londres.", "Desarrollo.", "La Pirámide.", "Contraataque."]
+            },
+            'gambito_dama': {
+                name: "Gambito Dama",
+                moves: ['d4', 'd5', 'c4', 'e6', 'Nc3', 'Nf6'],
+                texts: ["Peón Dama.", "Igualdad.", "¡El Gambito! Ofrecemos un peón.", "Se defiende.", "Presión.", "Desarrollo."]
+            }
+        };
+        const matesDB = {
+            'pasillo': {
+                name: "Pasillo",
+                fen: "6k1/5ppp/8/8/8/8/4R3/4K3 w - - 0 1",
+                moves: ['Re8#'],
+                texts: ["¡Jaque Mate en la última fila!"]
+            },
+            'beso': {
+                name: "Beso",
+                fen: "7k/5K2/8/6Q1/8/8/8/8 w - - 0 1",
+                moves: ['Qg7#'],
+                texts: ["El Beso de la Muerte."]
+            },
+            'escalera': {
+                name: "Escalera",
+                fen: "8/8/8/5k2/8/8/4R3/3R3K w - - 0 1",
+                moves: ['Rf1+', 'Kg5', 'Rg2+', 'Kh5', 'Rh1#'],
+                texts: ["Una Torre corta.", "El Rey sube.", "La otra golpea.", "El Rey sube.", "¡Mate final!"]
+            },
+            'arabe': {
+                name: "Mate Árabe",
+                fen: "7k/2R5/5N2/8/8/8/8/7K w - - 0 1",
+                moves: ['Rh7#'],
+                texts: ["Torre y Caballo cooperan."]
+            },
+            'anastasia': {
+                name: "Anastasia",
+                fen: "5rk1/5ppp/2N5/8/8/R7/2Q5/6K1 w - - 0 1",
+                moves: ['Ne7+', 'Kh8', 'Qxh7+', 'Kxh7', 'Rh3#'],
+                texts: ["Caballo a e7, jaque.", "El Rey huye al rincón.", "¡SACRIFICIO DE DAMA!", "El Rey debe comer.", "¡La Torre remata!"]
+            },
+            'boden': {
+                name: "Boden",
+                fen: "r1kr4/p1pp4/8/8/3B4/8/8/5B1K w - - 0 1",
+                moves: ['Ba6+', 'Kb8', 'Be5#'],
+                texts: ["Primer Alfil da Jaque.", "El Rey huye.", "¡El segundo Alfil da Mate!"]
+            }
+        };
+        const finalesDB = {
+            'reypeon': {
+                name: "Rey y Peón",
+                fen: "8/8/8/8/8/4k3/4P3/4K3 w - - 0 1",
+                moves: ['Kd1', 'Kf4', 'e4'],
+                texts: ["Oposición.", "Espera.", "Avanza."]
+            },
+            'dostorres': {
+                name: "Dos Torres",
+                fen: "8/8/4k3/R7/8/8/7R/6K1 w - - 0 1",
+                moves: ['Rh6+', 'Kd7', 'Ra7+', 'Kc8', 'Rh8#'],
+                texts: ["Jaque con Torre h6.", "El Rey sube.", "Jaque con Torre a7.", "El Rey sube.", "¡Mate!"]
+            },
+            'rey_dama': {
+                name: "Rey y Dama",
+                fen: "8/k7/2K5/8/1Q6/8/8/8 w - - 0 1",
+                moves: ['Qa5+', 'Kb8', 'Qb7#'],
+                texts: ["Jaque.", "Única casilla.", "¡Mate con apoyo!"]
+            },
+            'rey_torre': {
+                name: "Rey y Torre",
+                fen: "k7/8/K7/8/1R6/8/8/8 w - - 0 1",
+                moves: ['Rh4', 'Kb8', 'Rh8#'],
+                texts: ["Prepara el mate.", "El Rey espera.", "¡Mate al fondo!"]
+            },
+            'coronacion': {
+                name: "Coronación",
+                fen: "8/P7/2k5/8/2K5/8/8/8 w - - 0 1",
+                moves: ['a8=Q+', 'Kb6', 'Qb7+', 'Ka5', 'Qa7#'],
+                texts: ["¡Nueva Dama!", "El Rey huye.", "Jaque.", "Única.", "¡Mate!"]
+            }
+        };
+        var currentPuzzleIndex = 0;
+        var puzzleMistakes = 0;
+        const retosDB = [{
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2",
+            from: 'd8',
+            to: 'h4',
+            title: "Mate del Loco",
+            hint: "¡La Dama negra tiene vía libre hacia el Rey!"
+        }, {
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1",
+            from: 'f3',
+            to: 'f7',
+            title: "Mate Pastor",
+            hint: "La Dama blanca apunta a f7."
+        }, {
+            fen: "6k1/5ppp/8/8/8/8/4R3/4K3 w - - 0 1",
+            from: 'e2',
+            to: 'e8',
+            title: "Pasillo (Torre)",
+            hint: "El Rey está atrapado por sus peones. ¡Usa la Torre!"
+        }, {
+            fen: "7k/5K2/8/6Q1/8/8/8/8 w - - 0 1",
+            from: 'g5',
+            to: 'g7',
+            title: "Beso de la Muerte",
+            hint: "Ponte frente al Rey con la Dama."
+        }, {
+            fen: "k7/2Q5/1K6/8/8/8/8/8 w - - 0 1",
+            from: 'c7',
+            to: 'b7',
+            title: "Dama y Rey",
+            hint: "Corta el paso al Rey en la esquina."
+        }, {
+            fen: "6k1/5ppp/8/8/8/2Q5/8/6K1 w - - 0 1",
+            from: 'c3',
+            to: 'c8',
+            title: "Pasillo (Dama)",
+            hint: "Igual que el pasillo, pero con la Dama."
+        }, {
+            fen: "6rk/6pp/7N/8/8/8/8/7K w - - 0 1",
+            from: 'h6',
+            to: 'f7',
+            title: "Mate de la Coz",
+            hint: "¡El Caballo puede saltar y encerrar al Rey!"
+        }, {
+            fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+            from: 'g1',
+            to: 'f3',
+            title: "Desarrollo Caballo",
+            hint: "Saca el Caballo para controlar el centro."
+        }, {
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+            from: 'f1',
+            to: 'b5',
+            title: "Apertura Española",
+            hint: "El Alfil ataca al caballo defensor."
+        }, {
+            fen: "k7/8/1K6/8/8/8/8/3R4 w - - 0 1",
+            from: 'd1',
+            to: 'd8',
+            title: "Mate de Torre",
+            hint: "El Rey negro está atrapado en la banda. ¡Remata con la Torre!"
+        }, {
+            fen: "r1b1k1nr/pppp1ppp/2n5/2b1N3/2B1P2q/8/PPPP1PPP/RNBQK2R w KQkq - 1 5",
+            from: 'c4',
+            to: 'f7',
+            title: "Ataque f7",
+            hint: "El punto f7 es el más débil. ¡Atácalo con el Alfil!"
+        }, {
+            fen: "rnbqkbnr/ppp2ppp/8/3pp3/4P3/5Q2/PPPP1PPP/RNB1KBNR w KQkq - 0 3",
+            from: 'e4',
+            to: 'd5',
+            title: "Captura Central",
+            hint: "Gana control del centro comiendo el peón."
+        }, {
+            fen: "rnb1kbnr/pppp1ppp/8/4p3/7q/5P2/PPPPP1PP/RNBQKBNR w KQkq - 1 3",
+            from: 'g2',
+            to: 'g3',
+            title: "Evitar Mate",
+            hint: "¡Te están dando jaque! Cubre con el peón g2."
+        }, {
+            fen: "4k3/8/8/1r6/8/8/2Q5/4K3 w - - 0 1",
+            from: 'c2',
+            to: 'c6',
+            title: "Doble Ataque",
+            hint: "Da jaque y ataca la torre al mismo tiempo."
+        }, {
+            fen: "3k4/8/3n4/8/8/8/8/7R w - - 0 1",
+            from: 'h1',
+            to: 'd1',
+            title: "Clavada",
+            hint: "Coloca la torre en la columna 'd' para inmovilizar al caballo."
+        }];
+
+        function detenerAnimacion() {
+            if (academyTimeouts) {
+                academyTimeouts.forEach(x => clearTimeout(x));
+                academyTimeouts = [];
+            }
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        function inicioPizarra() {
+            iniciarPizarra();
+        }
+
+        $(document).ready(function () {
+            checkRole();
+            initAvatarSelector();
+            var config = {
+                draggable: false,
+                position: 'start',
+                pieceTheme: getPieceImg,
+                showNotation: true
+            };
+            board = Chessboard('board', config);
+            $(window).resize(board.resize);
+
+            $('#board-overlay').on('mousedown touchstart', function (e) {
+                if (e.type === 'touchstart' && e.cancelable) e.preventDefault();
+                var offset = $(this).offset();
+                var width = $(this).width();
+                if (!width) return;
+                var clientX = (e.type === 'touchstart') ? e.originalEvent.touches[0].pageX : e.pageX;
+                var clientY = (e.type === 'touchstart') ? e.originalEvent.touches[0].pageY : e.pageY;
+                var x = clientX - offset.left;
+                var y = clientY - offset.top;
+                var squareSize = width / 8;
+                var col = Math.floor(x / squareSize);
+                var row = Math.floor(y / squareSize);
+                if (col >= 0 && col <= 7 && row >= 0 && row <= 7) {
+                    var files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+                    var ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+                    if (board && board.orientation() === 'black') {
+                        files.reverse();
+                        ranks.reverse();
+                    }
+                    var square = files[col] + ranks[row];
+                    if (currentMode === 'online' || currentMode === 'tournament') handleTapClick(square);
+                    else if (currentMode === 'puzzle') handlePuzzleClick(square);
+                    else if (currentMode === 'teacher') handleTeacherClick(square);
+                    else if (currentMode === 'bot') handleBotClick(square);
+                }
+            });
+        });
+
+        function initAvatarSelector() {
+            const s = document.getElementById('avatar-selector');
+            if (s) {
+                s.innerHTML = '';
+                avatars.forEach(av => {
+                    let div = document.createElement('div');
+                    div.className = 'avatar-option';
+                    div.innerText = av;
+                    div.onclick = function () {
+                        $('.avatar-option').removeClass('selected');
+                        div.classList.add('selected');
+                        selectedAvatarTemp = av;
+                    };
+                    s.appendChild(div);
+                });
+                $('.avatar-option').first().addClass('selected');
+            }
+        }
+
+        function getPieceImg(piece) {
+            return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
+        }
+
+        function aplicarPlan() {
+            const plan = localStorage.getItem('jlLicenseType') || 'premium';
+            if (plan === 'light') {
+                $('#edu-buttons-container').hide();
+                $('#btn-honor').hide();
+                $('#btn-pizarra').hide();
+                $('#btn-style').hide();
+            } else {
+                $('#edu-buttons-container').show();
+                $('#btn-honor').show();
+                $('#btn-pizarra').show();
+                $('#btn-style').show();
+            }
+        }
+
+        function ocultarTodo() {
+            $('#role-selection-view, #teacher-login-view, #teacher-dashboard-view, #teacher-lobby-view, #setup-view, #student-menu-view, #student-lobby-view, #game-controls, #board-wrapper, #academy-main-menu, #ranking-view, #mesas-area, #chat-area, #online-header, #bot-header, #puzzle-header, #teacher-header, #academy-header, #final-results-view, #library-view').hide();
+            game = new Chess();
+            selectedSquare = null;
+            removeHighlights();
+            playerColor = 'w';
+            isSpectator = false;
+            detenerAnimacion();
+            detenerReloj();
+        }
+
+        function checkRole() {
+            var r = localStorage.getItem('jlUserRole');
+            if (r) {
+                ocultarTodo();
+                if (r === 'teacher') {
+                    $('#teacher-dashboard-view').show();
+                    var activeTour = localStorage.getItem('activeTournament');
+                    if (activeTour) $('#recover-section').show();
+                } else {
+                    loadProfile();
+                    aplicarPlan();
+                }
+            }
+        }
+
+        function seleccionarRol(r) {
+            if (r === 'alumno') {
+                localStorage.setItem('jlUserRole', 'student');
+                checkRole();
+            } else {
+                $('#role-selection-view').hide();
+                $('#teacher-login-view').show();
+            }
+        }
+
+        function loginProfesor() {
+            const key = $('#teacher-key').val().trim();
+            const school = $('#teacherSchoolKeyInput').val().trim();
+            if (!key) return Swal.fire('Error', 'Ingresa una licencia', 'warning');
+
+            window.tempTeacherSchool = school; // Store for post-validation
+            socket.emit('validateLicense', key);
+        }
+
+        function crearTorneo() {
+            Swal.fire({
+                title: 'Selecciona Modo',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: '📱 Virtual',
+                denyButtonText: '♟️ Presencial',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    socket.emit('createTournament', 'virtual');
+                } else if (result.isDenied) {
+                    socket.emit('createTournament', 'presencial');
+                }
+            });
+        }
+
+        function agregarJugadorManual() {
+            const name = $('#manualName').val().trim();
+            if (!name) return;
+            const code = $('#lobby-code').text();
+            socket.emit('addManualPlayer', {
+                code: code,
+                name: name
+            });
+            $('#manualName').val('');
+        }
+
+        function reportarResultadoManual(room, winner) {
+            const code = $('#lobby-code').text();
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            Toast.fire({
+                icon: 'success',
+                title: 'Guardando...'
+            });
+            socket.emit('reportResult', {
+                code: code,
+                room: room,
+                winner: winner
+            });
+        }
+
+        function borrarRol() {
+            if (confirm("¿Salir?")) {
+                localStorage.removeItem('jlUserRole');
+                localStorage.removeItem('jlLicenseType');
+                localStorage.removeItem('activeTournament');
+                location.reload();
+            }
+        }
+
+        
+        let pendingRetoId = null;
+
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const reto = urlParams.get('reto');
+            if (reto) {
+                pendingRetoId = reto;
+            }
+        });
+
+        async function compartirEnlaceReto() {
+            const idReto = 'reto_' + Math.random().toString(36).substr(2, 9);
+            const basePath = window.location.origin + window.location.pathname;
+            const link = basePath + '?reto=' + idReto;
+            
+            try {
+                await navigator.clipboard.writeText(link);
+            } catch(e){}
+
+            if (navigator.share) {
+                navigator.share({
+                    title: '¡Reto de Ajedrez!',
+                    text: '¡Únete a mi partida de ajedrez ahora mismo!',
+                    url: link
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                Swal.fire('Enlace Copiado', 'Se ha copiado el enlace de reto al portapapeles:\n' + link, 'success');
+            }
+
+            entrarRetoPorEnlace(idReto);
+        }
+
+        function entrarRetoPorEnlace(room) {
+            currentRoom = room;
+            ocultarTodo();
+            currentMode = 'online';
+            $('#game-controls').show();
+            $('#online-header').show();
+            $('#chat-area').show();
+            $('#board-wrapper').show();
+            $('#tournament-actions').hide();
+            $('#btn-reset-online').show();
+            $('#btn-salir-game').show();
+            $('#btn-volver-profe').hide();
+            configurarTablero('start');
+            socket.emit('updateProfile', userProfile);
+            socket.emit('join', { room: room });
+            socket.emit('requestBoardState', room);
+        }
+\n        
+        function volverMenu() {
+            ocultarTodo();
+            if (pendingRetoId && userProfile && userProfile.name) {
+                const r = pendingRetoId;
+                pendingRetoId = null;
+                entrarRetoPorEnlace(r);
+                return;
+            }
+
+            var r = localStorage.getItem('jlUserRole');
+            if (r === 'teacher') $('#teacher-dashboard-view').show();
+            else if (userProfile.name) {
+                $('#student-menu-view').show();
+                updateCardUI();
+            } else $('#setup-view').show();
+            if (currentRoom) {
+                if (socket) socket.emit('leave', currentRoom);
+                currentRoom = "";
+            }
+            if (globalChatRoom) {
+                socket.emit('leave', globalChatRoom);
+                globalChatRoom = "";
+            }
+            board.clear();
+        }
+
+        
+        function loadProfile() {
+            const s = localStorage.getItem('jlChessProfile');
+            if (s) {
+                userProfile = {
+                    ...userProfile,
+                    ...JSON.parse(s)
+                };
+                
+                if (pendingRetoId) {
+                    const r = pendingRetoId;
+                    pendingRetoId = null;
+                    if (socket) socket.emit('updateProfile', userProfile);
+                    entrarRetoPorEnlace(r);
+                    return;
+                }
+
+                $('#student-menu-view').show();
+                updateCardUI();
+                applySkin();
+                if (socket) socket.emit('updateProfile', userProfile);
+                $('#chat-area').show(); // Enable Global Chat
+                socket.emit('join', { room: 'general' }); // Join Global Lobby
+            } else {
+                $('#setup-view').show();
+                loadRecentSchools(); // Load chips
+                $('#chat-area').show();
+
+                let roomName = (currentSchoolId && currentSchoolId !== '') ? `${currentSchoolId}_general` : 'general';
+                socket.emit('join', { room: roomName });
+            }
+        }
+
+        function saveProfile() {
+            localStorage.setItem('jlChessProfile', JSON.stringify(userProfile));
+            updateCardUI();
+            applySkin();
+            if (socket) socket.emit('updateProfile', userProfile);
+        }
+
+        
+        async function registerUser() {
+            const username = $('#newPlayerName').val();
+            const password = $('#playerPassword').val();
+            if(!username || !password) return Swal.fire('Error', 'Debes poner nombre y contraseña', 'error');
+
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+            const fileInput = document.getElementById('avatarFile');
+            if(fileInput.files.length > 0) {
+                formData.append('avatarFile', fileInput.files[0]);
+            } else if (selectedAvatarTemp) {
+                // Not standard form data, but let's ignore emojis for register if not strictly needed
+                // It will default to emoji in server if no file
+            }
+
+            try {
+                const res = await fetch('/api/register', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    userProfile = data.user;
+                    saveProfile();
+                    subscribeToPush();
+                    volverMenu();
+                    socket.emit('updateProfile', userProfile);
+                } else {
+                    Swal.fire('Error', data.error, 'error');
+                }
+            } catch(e) {
+                Swal.fire('Error', 'Error de conexión', 'error');
+            }
+        }
+
+        async function loginUser() {
+            const username = $('#newPlayerName').val();
+            const password = $('#playerPassword').val();
+            if(!username || !password) return Swal.fire('Error', 'Faltan datos', 'error');
+
+            try {
+                const res = await fetch('/api/login', { 
+                    method: 'POST', 
+                    headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({username, password}) 
+                });
+                const data = await res.json();
+                if(data.success) {
+                    userProfile = data.user;
+                    saveProfile();
+                    subscribeToPush();
+                    volverMenu();
+                    socket.emit('updateProfile', userProfile);
+                } else {
+                    Swal.fire('Error', data.error, 'error');
+                }
+            } catch(e) {
+                Swal.fire('Error', 'Error de conexión', 'error');
+            }
+        }
+
+        async function subscribeToPush() {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                try {
+                    const reg = await navigator.serviceWorker.ready;
+                    const sub = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: 'BP0E6v9iIvVnTh9tZz3tGOUkTABUUq-G0Z0_lHTs5Mu-5b3sS3fUOzN7WBpUMws64FJj4hx12AeFpT4MxI3RW3E'
+                    });
+                    await fetch('/api/save-subscription', {
+                        method: 'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ username: userProfile.name, subscription: sub })
+                    });
+                } catch(e) {
+                    console.log('Push no activado por el usuario.');
+                }
+            }
+        }
+
+        // Overwrite updateCardUI
+        function updateCardUI() {
+            $('#card-name').text(userProfile.name);
+            if(userProfile.avatar && userProfile.avatar.startsWith('/uploads/')) {
+                $('#card-avatar').html(`<img src="${userProfile.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`);
+            } else {
+                $('#card-avatar').text(userProfile.avatar || "👤");
+            }
+            $('#card-elo').text(userProfile.elo || 400);
+        }
+
+        function crearPerfilLegacy() {
+            userProfile.name = $('#newPlayerName').val() || "Jugador";
+            userProfile.avatar = selectedAvatarTemp;
+            saveProfile();
+            volverMenu();
+        }
+
+        function updateCardUI() {
+            $('#card-name').text(userProfile.name);
+            $('#card-avatar').text(userProfile.avatar);
+            $('#card-elo').text(userProfile.elo || 400);
+        }
+
+        function toggleSkin() {
+            if (userProfile.premiumUnlocked) {
+                userProfile.skin = (userProfile.skin === 'classic') ? 'artist' : 'classic';
+                saveProfile();
+                Swal.fire({
+                    title: "Estilo Actualizado",
+                    text: "Modo: " + (userProfile.skin === 'artist' ? 'PREMIUM 🌟' : 'CLÁSICO'),
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire("Bloqueado", "Completa todos los RETOS para desbloquear el estilo Premium.", "warning");
+            }
+        }
+
+        function applySkin() {
+            document.body.className = (userProfile.skin === 'artist') ? 'artist-skin' : 'classic-skin';
+        }
+
+        function iniciarReloj() {
+            detenerReloj();
+            timeWhite = 600;
+            timeBlack = 600;
+            actualizarRelojUI();
+            timerInterval = setInterval(() => {
+                if (game.turn() === 'w') {
+                    timeWhite--;
+                    if (timeWhite <= 0) declararFin("Tiempo. Ganan Negras", 'b');
+                } else {
+                    timeBlack--;
+                    if (timeBlack <= 0) declararFin("Tiempo. Ganan Blancas", 'w');
+                }
+                actualizarRelojUI();
+            }, 1000);
+        }
+
+        function detenerReloj() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function actualizarRelojUI() {
+            $('#time-w').text(fmt(timeWhite));
+            $('#time-b').text(fmt(timeBlack));
+            $('.clock-box').removeClass('clock-active');
+            if (game.turn() === 'w') $('#clock-w').addClass('clock-active');
+            else $('#clock-b').addClass('clock-active');
+        }
+
+        function fmt(s) {
+            var m = Math.floor(s / 60);
+            var ss = s % 60;
+            return m + ":" + (ss < 10 ? "0" + ss : ss);
+        }
+
+        function declararFin(msg, winnerColor) {
+            detenerReloj();
+            Swal.fire('Fin', msg, 'info').then(() => {
+                if (currentMode === 'tournament' && !isSpectator) {
+                    $('#game-controls').hide();
+                    $('#board-wrapper').hide();
+                    $('#student-lobby-view').show();
+                    $('#student-status-msg').text("Esperando siguiente ronda...");
+                }
+            });
+            if (winnerColor && currentMode === 'tournament' && !isSpectator) socket.emit('reportResult', {
+                room: currentRoom,
+                winner: winnerColor,
+                reason: 'Tiempo'
+            });
+        }
+
+        function verificarArbitro() {
+            if (game.in_checkmate()) {
+                var winner = (game.turn() === 'w') ? 'b' : 'w';
+                declararFin("Jaque Mate. Ganan " + (winner === 'w' ? 'Blancas' : 'Negras'), winner);
+                if (currentMode === 'tournament' && !isSpectator) socket.emit('reportResult', {
+                    room: currentRoom,
+                    winner: winner,
+                    reason: 'Mate'
+                });
+            } else if (game.in_draw()) {
+                declararFin("Tablas");
+                if (currentMode === 'tournament' && !isSpectator) socket.emit('reportResult', {
+                    room: currentRoom,
+                    winner: 'draw',
+                    reason: 'Reglas'
+                });
+            } else if (game.in_check()) {
+                playSound('error');
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                Toast.fire({
+                    icon: 'warning',
+                    title: '¡JAQUE!'
+                });
+            }
+        }
+
+        function recuperarTorneoLocal() {
+            var c = localStorage.getItem('activeTournament');
+            if (c) socket.emit('recoverTournament', c);
+        }
+
+        function finalizarTorneo() {
+            if (confirm("¿Terminar torneo y ver resultados?")) {
+                var code = $('#lobby-code').text();
+                socket.emit('finishTournament', code);
+                localStorage.removeItem('activeTournament');
+            }
+        }
+
+        function cerrarResultados() {
+            volverMenu();
+        }
+
+        function verSeleccionMesas() {
+            ocultarTodo();
+            $('#mesas-area').show();
+            $('#mesas-area').show();
+            $('#chat-area').show();
+
+            // Namespace: schoolId + "_general" or just "general"
+            let roomName = (currentSchoolId && currentSchoolId !== '') ? `${currentSchoolId}_general` : 'general';
+            socket.emit('join', { room: roomName });
+
+            socket.emit('getPublicRoomsStatus', currentSchoolId);
+            $('#newPlayerName').val('');
+            $('#schoolKeyInput').val(''); // Clear school key
+
+            loadRecentSchools(); // Load chips
+        }
+
+        function loadRecentSchools() {
+            let recent = JSON.parse(localStorage.getItem('jlRecentSchools') || "[]");
+            let container = $('#recent-schools-list');
+            container.empty();
+
+            recent.forEach(code => {
+                let btn = $(`<button class="recent-school-pill">${code}</button>`);
+                btn.click(() => $('#schoolKeyInput').val(code));
+                container.append(btn);
+            });
+        }
+
+        function saveRecentSchool(code) {
+            if (!code || code.trim() === '') return;
+            let recent = JSON.parse(localStorage.getItem('jlRecentSchools') || "[]");
+            if (!recent.includes(code)) {
+                recent.unshift(code);
+                if (recent.length > 5) recent.pop();
+                localStorage.setItem('jlRecentSchools', JSON.stringify(recent));
+            }
+        }
+
+        function enviarMensaje() {
+            var msg = $('#chat-input').val();
+            if (msg.trim() === '') return;
+            var msg = $('#chat-input').val();
+            if (msg.trim() === '') return;
+
+            // Default to namespaced general if no specific room
+            var defaultRoom = (currentSchoolId && currentSchoolId !== '') ? `${currentSchoolId}_general` : 'general';
+            var room = currentRoom || globalChatRoom || defaultRoom;
+
+            var senderName = userProfile.name || "Anónimo"; // Handle anonymous users
+            var senderAvatar = userProfile.avatar || "👤"; // Default avatar for anonymous
+            socket.emit('chat', { room: room, msg: msg, name: senderName, avatar: senderAvatar });
+            $('#chat-input').val('');
+        }
+
+        if (socket) {
+            socket.on('connect', function () {
+                // Namespace: schoolId + "_general" or just "general"
+                let roomName = (currentSchoolId && currentSchoolId !== '') ? `${currentSchoolId}_general` : 'general';
+                socket.emit('join', { room: roomName });
+            });
+
+            function unirsePartida(roomCode) {
+                let prefix = (currentSchoolId && currentSchoolId !== '') ? `${currentSchoolId}_` : "";
+                let finalRoom = prefix + roomCode;
+
+                socket.emit('join', { room: finalRoom });
+                verTablero(finalRoom);
+            }
+            socket.on('licenseResult', function (data) {
+                if (data.valid) {
+                    localStorage.setItem('jlUserRole', 'teacher');
+                    localStorage.setItem('jlLicenseType', data.type);
+
+                    // Handle School Isolation for Teacher
+                    if (window.tempTeacherSchool) {
+                        localStorage.setItem('jlSchoolId', window.tempTeacherSchool);
+                        currentSchoolId = window.tempTeacherSchool;
+                        // Switch rooms immediately
+                        socket.emit('leave', 'general');
+                        socket.emit('join', { room: `${currentSchoolId}_general` });
+                    } else {
+                        // If empty, clear it? Or keep previous? 
+                        // Better clear to allow switching back to "Global"
+                        localStorage.removeItem('jlSchoolId');
+                        currentSchoolId = "";
+                        socket.emit('join', { room: 'general' });
+                    }
+
+                    let capacityMsg = "";
+                    if (data.activeRooms !== undefined) {
+                        capacityMsg = ` (Salas: ${data.activeRooms}/20)`;
+                    }
+
+                    Swal.fire({
+                        title: `¡Bienvenido ${data.school}!`,
+                        text: `Modo: ${data.type.toUpperCase()}${capacityMsg}`,
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    checkRole();
+                } else {
+                    Swal.fire('Error', data.msg, 'error');
+                }
+            });
+
+            socket.on('tournamentCreated', function (data) {
+                ocultarTodo();
+                $('#teacher-lobby-view').show();
+                $('#chat-area').show(); // Show Global Chat
+                globalChatRoom = 'lobby_' + data.code; // Set Global Chat
+                $('#lobby-code').text(data.code);
+                $('#mode-display').text("Modo: " + data.mode.toUpperCase());
+                tournamentMode = data.mode;
+                $('#lobby-players').empty();
+                $('#player-count').text("0");
+                $('#lobby-content').show();
+                $('#matches-content').hide();
+                if (data.mode === 'presencial') $('#manual-add-section').show();
+                else $('#manual-add-add-section').hide();
+                localStorage.setItem('activeTournament', data.code);
+            });
+
+            socket.on('tournamentRecovered', function (data) {
+                // DETECTAR MODO TV
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('mode') === 'tv') {
+                    initTvMode(data.code, data.matches, currentStandings);
+                    return;
+                }
+
+                ocultarTodo();
+                $('#teacher-lobby-view').show();
+                $('#chat-area').show(); // Show Global Chat
+                globalChatRoom = 'lobby_' + data.code; // Set Global Chat
+                $('#lobby-code').text(data.code);
+                $('#mode-display').text("Modo: " + data.mode.toUpperCase());
+                tournamentMode = data.mode;
+                if (data.mode === 'presencial') $('#manual-add-section').show();
+                else $('#manual-add-section').hide();
+                if (data.matches.length > 0) {
+                    $('#lobby-content').hide();
+                    $('#matches-content').show();
+                    renderMatches(data.matches);
+                } else {
+                    $('#lobby-content').show();
+                    $('#matches-content').hide();
+                }
+            });
+
+            socket.on('updatePlayerList', function (players) {
+                // Update Teacher View
+                $('#lobby-players').empty();
+                players.forEach(p => $('#lobby-players').append(`<span class="player-chip">${p.avatar} ${p.name}</span>`));
+                $('#player-count').text(players.length);
+
+                // Update Sidebar List
+                $('#online-users-list').empty();
+                players.forEach(p => {
+                    $('#online-users-list').append(`
+                        <div class="online-user-item">
+                            <span class="online-dot"></span>
+                            <span>${p.avatar} ${p.name}</span>
+                        </div>
+                    `);
+                });
+            });
+
+            socket.on('updateMatches', function (matches) {
+                currentMatches = matches;
+                $('#lobby-content').hide();
+                $('#matches-content').show();
+                renderMatches(matches);
+                if ($('#tv-dashboard-view').is(':visible')) renderTvMatches(matches);
+            });
+
+            socket.on('updateStandings', function (players) {
+                currentStandings = players; // Guardamos para PDF
+                var tbody = $('#standings-body');
+                tbody.empty();
+                var studentBody = $('#student-standings-body');
+                studentBody.empty();
+
+                players.forEach((p, index) => {
+                    var cls = index === 0 ? 'podium-gold' : (index === 1 ? 'podium-silver' : (index === 2 ? 'podium-bronze' : ''));
+                    var row = `<tr class="${cls}"><td>${index + 1}</td><td>${p.avatar} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`;
+                    if (tbody.length) tbody.append(row);
+                    if (studentBody.length) studentBody.append(row);
+                });
+                if ($('#tv-dashboard-view').is(':visible')) updateTvStandings(players);
+            });
+
+            socket.on('showFinalResults', function (players) {
+                ocultarTodo();
+                $('#final-results-view').show();
+                $('#final-standings-body').empty();
+                if (localStorage.getItem('jlUserRole') === 'teacher') {
+                    $('#btn-pdf').show();
+                } else {
+                    $('#btn-pdf').hide();
+                }
+                if (players.length > 0 && players[0].name === userProfile.name) {
+                    Swal.fire({
+                        title: '¡CAMPEÓN!',
+                        text: '¡Felicidades!',
+                        icon: 'success'
+                    });
+                }
+                players.forEach((p, index) => {
+                    var cls = index === 0 ? 'podium-gold' : (index === 1 ? 'podium-silver' : (index === 2 ? 'podium-bronze' : ''));
+                    $('#final-standings-body').append(`<tr class="${cls}"><td>${index + 1}º</td><td>${p.avatar} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`);
+                });
+                localStorage.removeItem('activeTournament');
+            });
+
+            socket.on('tournamentEndedData', function (data) {
+                finalTournamentData = data;
+            });
+            socket.on('spectateStart', function (room) {
+                ocultarTodo();
+                currentMode = 'online';
+                currentRoom = room;
+                isSpectator = true;
+                $('#game-controls').show();
+                $('#online-header').show();
+                $('#board-wrapper').show();
+                $('#chat-area').show();
+                // Ensure sidebar is visible for teacher
+                if (localStorage.getItem('jlUserRole') === 'teacher') {
+                    $('#chat-left-col').show();
+                    $('#chat-right-col').show();
+                }
+                $('#status-display').text("Espectador");
+                $('#btn-salir-game').hide();
+                $('#btn-volver-profe').show();
+                $('#tournament-actions').hide();
+                socket.emit('requestBoardState', room);
+
+                // Robust resize for teacher view
+                setTimeout(() => {
+                    if (board) {
+                        board.resize();
+                        // Force redraw
+                        board.position(game.fen());
+                    }
+                }, 300);
+                setTimeout(() => { if (board) board.resize(); }, 1000);
+            });
+            socket.on('joinedTournament', function (data) {
+                ocultarTodo();
+                $('#student-lobby-view').show();
+                $('#chat-area').show();
+                globalChatRoom = 'lobby_' + data.code;
+            });
+            socket.on('matchStarted', function (data) {
+                ocultarTodo();
+                currentMode = 'tournament';
+                currentRoom = data.room;
+                playerColor = data.color;
+                isSpectator = false;
+                $('#game-controls').show();
+                $('#online-header').show();
+                $('#board-wrapper').show();
+                $('#chat-area').show();
+                $('#status-display').text("VS " + data.opponent);
+                $('#btn-salir-game').hide();
+                $('#btn-reset-online').hide();
+                $('#tournament-actions').show();
+                configurarTablero('start', playerColor === 'w' ? 'white' : 'black');
+                Swal.fire('¡A Jugar!', 'Tu rival es: ' + data.opponent, 'success');
+                iniciarReloj();
+            });
+            socket.on('tournamentBye', function (msg) {
+                Swal.fire('Descanso', msg, 'info');
+            });
+            socket.on('opponentResigned', function () {
+                declararFin("¡Ganaste! Rival se rindió.");
+                socket.emit('reportResult', {
+                    room: currentRoom,
+                    winner: playerColor,
+                    reason: 'Rendición'
+                });
+            });
+            socket.on('drawOffered', function () {
+                Swal.fire({
+                    title: '¿Tablas?',
+                    text: 'El rival ofrece empate.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Aceptar'
+                }).then((result) => {
+                    if (result.isConfirmed) socket.emit('acceptDraw', currentRoom);
+                });
+            });
+            socket.on('drawAccepted', function () {
+                declararFin("Tablas acordadas.");
+                socket.emit('reportResult', {
+                    room: currentRoom,
+                    winner: 'draw',
+                    reason: 'Acuerdo'
+                });
+            });
+            socket.on('boardState', function (fen) {
+                if (fen) {
+                    if (fen === 'start') {
+                        game = new Chess();
+                        board.start();
+                    } else {
+                        game.load(fen);
+                        board.position(fen);
+                    }
+                    if (isSpectator) actualizarRelojUI();
+                    setTimeout(() => board.resize(), 100);
+                }
+            });
+            socket.on('tournamentError', function (msg) {
+                Swal.fire('Error', msg, 'error');
+            });
+
+            socket.on('updateClientElo', function (newElo) {
+                const oldElo = userProfile.elo || 400;
+                userProfile.elo = newElo;
+                saveProfile();
+                $('#card-elo').text(newElo);
+                const diff = newElo - oldElo;
+                if (diff !== 0) {
+                    const msg = diff > 0 ? `+${diff} puntos` : `${diff} puntos`;
+                    const icon = diff > 0 ? 'success' : 'info';
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    Toast.fire({
+                        icon: icon,
+                        title: `Ranking: ${msg}`
+                    });
+                }
+            });
+            socket.on('move', function (data) {
+                if (data.reset) {
+                    game = new Chess();
+                    board.start();
+                    removeHighlights();
+                    return;
+                }
+                game.move(data.move);
+                board.position(game.fen());
+                playSound(data.move.captured ? 'capture' : 'move');
+                verificarArbitro();
+                actualizarRelojUI();
+            });
+            socket.on('playerRole', function (role) {
+                playerColor = (role === 'spectator') ? 'w' : role;
+                isSpectator = (role === 'spectator');
+                board.orientation(playerColor === 'b' ? 'black' : 'white');
+                if (!isSpectator && currentMode === 'online') iniciarReloj();
+            });
+            socket.on('chat', (m) => {
+                var box = $('#chat-box');
+                box.append(`<p>${m}</p>`);
+                box.scrollTop(box[0].scrollHeight);
+            });
+
+            socket.on('publicRoomsStatus', function (status) {
+                var select = $('#roomSelect');
+                select.empty();
+                for (let i = 1; i <= 20; i++) {
+                    let r = "Mesa " + i;
+                    let count = status[r] || 0;
+                    let icon = "🟢"; // Libre
+                    if (count === 1) icon = "🟡"; // Esperando
+                    if (count >= 2) icon = "🔴"; // Ocupado
+
+                    select.append(`<option value="${r}">${icon} ${r} (${count}/2)</option>`);
+                }
+            });
+        }
+
+        function renderMatches(matches) {
+            $('#matches-list').empty();
+            if (matches.length === 0) $('#matches-list').text("Esperando...");
+
+            matches.forEach(m => {
+                let statusHtml = "";
+
+                if (m.status === 'bye' || m.black === "LIBRE (Bye)" || m.black === "DESCANSO (Bye)") {
+                    $('#matches-list').append(`
+                        <div class="match-item" style="background: rgba(46, 204, 113, 0.2); border: 2px solid #2ecc71;">
+                            <div class="match-title" style="justify-content:center; color:#2ecc71;">${m.white}</div>
+                            <span style="font-size:0.9rem; color: #fff; font-weight:bold;">TIENE BYE (LIBRE)</span>
+                            <span style="font-size:0.8rem; font-style:italic;">+1 Punto Automático</span>
+                        </div>
+                    `);
+                    return;
+                }
+
+                if (m.status !== 'playing' && tournamentMode === 'virtual') {
+                    statusHtml = `<span style="color:#e74c3c;">🔴 ${m.result}</span>`;
+                } else if (tournamentMode === 'virtual') {
+                    statusHtml = `<button class="btn-watch" onclick="espectarPartida('${m.room}')">👁️ Ver</button>`;
+                } else {
+                    let btnStyle = "padding:10px; font-size:12px; border-radius:6px; font-weight:bold;";
+                    let currentRes = m.status === 'finished' ? `<div style='margin-bottom:8px; color:#f1c40f; font-weight:bold; border-bottom:1px solid #555; padding-bottom:5px; width:100%; text-align:center;'>Resultado: ${m.result}</div>` : "";
+
+                    statusHtml = `
+                        ${currentRes}
+                        <div class="manual-result-row">
+                            <button class="btn-green btn-res" style="${btnStyle}" onclick="reportarResultadoManual('${m.room}', 'w')">🏆 ${m.white}</button>
+                            <button class="btn-yellow btn-res" style="${btnStyle}" onclick="reportarResultadoManual('${m.room}', 'draw')">🤝 Tablas</button>
+                            <button class="btn-red btn-res" style="${btnStyle}" onclick="reportarResultadoManual('${m.room}', 'b')">🏆 ${m.black}</button>
+                        </div>
+                    `;
+                }
+
+                $('#matches-list').append(`
+                    <div class="match-item">
+                        <div class="match-title">
+                            <span>⚪ ${m.white}</span>
+                            <span style="font-size:0.8em; color:#bdc3c7;">VS</span>
+                            <span>⚫ ${m.black}</span>
+                        </div>
+                        ${statusHtml}
+                    </div>
+                `);
+            });
+        }
+
+        // --- GENERADOR PDF REPORTE FINAL ---
+        function generarReporteFinalPDF() {
+            if (!finalTournamentData) return Swal.fire('Error', 'No hay datos del torneo.', 'error');
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+            const players = finalTournamentData.players;
+            const rounds = finalTournamentData.totalRounds;
+
+            doc.setFontSize(22);
+            doc.setTextColor(44, 62, 80);
+            doc.text("Reporte Final - JL Chess Escolar", 105, 20, null, null, "center");
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 105, 30, null, null, "center");
+
+            const headers = [
+                ['#', 'Jugador']
+            ];
+            for (let i = 1; i <= rounds; i++) headers[0].push(`R${i}`);
+            headers[0].push('Pts Total');
+            headers[0].push('Buchholz');
+
+            const body = players.map((p, index) => {
+                const row = [(index + 1).toString(), p.name];
+                for (let r = 1; r <= rounds; r++) row.push(p.history && p.history[`R${r}`] ? p.history[`R${r}`] : "-");
+                row.push(p.score.toString());
+                row.push(p.buchholz.toString());
+                return row;
+            });
+
+            doc.autoTable({
+                head: headers,
+                body: body,
+                startY: 40,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [44, 62, 80],
+                    textColor: 255
+                },
+                styles: {
+                    halign: 'center'
+                },
+                columnStyles: {
+                    1: {
+                        halign: 'left'
+                    }
+                }
+            });
+            doc.save("Reporte_Final.pdf");
+        }
+
+        // --- GENERADOR PDF TABLA ACTUAL ---
+        function generarTablaPDF() {
+            if (!currentStandings || currentStandings.length === 0) return Swal.fire('Info', 'No hay datos aún.', 'info');
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(22);
+            doc.setTextColor(44, 62, 80);
+            doc.text("Tabla de Posiciones", 105, 20, null, null, "center");
+            doc.setFontSize(10);
+            doc.text(`JL Chess Escolar - ${new Date().toLocaleTimeString()}`, 105, 28, null, null, "center");
+
+            const headers = [
+                ['#', 'Jugador', 'Puntos', 'Buchholz']
+            ];
+            const body = currentStandings.map((p, index) => {
+                return [(index + 1).toString(), p.name, p.score.toString(), p.buchholz.toString()];
+            });
+
+            doc.autoTable({
+                head: headers,
+                body: body,
+                startY: 35,
+                theme: 'striped',
+                styles: {
+                    fontSize: 12,
+                    cellPadding: 3,
+                    halign: 'center'
+                },
+                headStyles: {
+                    fillColor: [52, 73, 94],
+                    textColor: 255
+                },
+                columnStyles: {
+                    1: {
+                        halign: 'left'
+                    }
+                }
+            });
+            doc.save("Tabla_Posiciones.pdf");
+        }
+
+        // --- GENERADOR PDF EMPAREJAMIENTOS ---
+        function generarEmparejamientosPDF() {
+            if (!currentMatches || currentMatches.length === 0) return Swal.fire('Info', 'No hay emparejamientos activos.', 'info');
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+            const ronda = currentMatches[0].round || "?";
+            doc.setFontSize(20);
+            doc.setTextColor(44, 62, 80);
+            doc.text(`Emparejamientos - Ronda ${ronda}`, 105, 20, null, null, "center");
+            doc.setFontSize(10);
+            doc.text("JL Chess Escolar", 105, 28, null, null, "center");
+
+            const headers = [
+                ['Mesa', 'Blancas', 'Negras', 'Resultado']
+            ];
+            const body = currentMatches.map((m, index) => {
+                let res = "";
+                if (m.status !== 'playing') res = m.result || "Fin";
+                return [(index + 1).toString(), m.white, m.black, res];
+            });
+
+            doc.autoTable({
+                head: headers,
+                body: body,
+                startY: 35,
+                theme: 'striped',
+                styles: {
+                    fontSize: 12,
+                    cellPadding: 3,
+                    halign: 'center'
+                },
+                headStyles: {
+                    fillColor: [52, 73, 94],
+                    textColor: 255
+                },
+                columnStyles: {
+                    3: {
+                        cellWidth: 40
+                    }
+                }
+            });
+            doc.save(`Emparejamientos_Ronda_${ronda}.pdf`);
+        }
+
+        function iniciarRonda() {
+            var code = $('#lobby-code').text();
+            socket.emit('startRound', code);
+        }
+
+        function espectarPartida(room) {
+            socket.emit('spectateMatch', room);
+        }
+
+        function ingresarTorneo() {
+            Swal.fire({
+                title: 'Código',
+                input: 'text',
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    socket.emit('updateProfile', userProfile);
+                    socket.emit('joinTournament', result.value);
+                }
+            });
+        }
+
+        function rendirse() {
+            if (confirm("¿Rendirse?")) {
+                socket.emit('resign', currentRoom);
+                socket.emit('reportResult', {
+                    room: currentRoom,
+                    winner: (playerColor === 'w' ? 'b' : 'w'),
+                    reason: 'Rendición'
+                });
+                declararFin("Te has rendido.");
+            }
+        }
+
+        function pedirTablas() {
+            if (confirm("¿Pedir tablas?")) {
+                socket.emit('offerDraw', currentRoom);
+                Swal.fire('Enviado', 'Esperando...', 'info');
+            }
+        }
+
+        function forzarReinicioOnline() {
+            if (confirm("¿Reiniciar partida?")) {
+                socket.emit('move', {
+                    room: currentRoom,
+                    reset: true
+                });
+                game = new Chess();
+                board.start();
+                removeHighlights();
+            }
+        }
+
+        function verCuadroHonor() {
+            Swal.fire('Ranking', 'Próximamente', 'info');
+        }
+
+        function iniciarPizarra() {
+            ocultarTodo();
+            currentMode = 'teacher';
+            $('#game-controls').show();
+            $('#teacher-header').show();
+            $('#board-wrapper').show();
+            $('#btn-salir-game').hide();
+            configurarTablero('start');
+        }
+
+        function limpiarPizarra() {
+            game = new Chess();
+            board.start();
+            removeHighlights();
+            selectedSquare = null;
+        }
+
+        function unirsePartida() {
+            var r = document.getElementById('roomSelect').value;
+            currentRoom = r;
+            ocultarTodo();
+            currentMode = 'online';
+            $('#game-controls').show();
+            $('#online-header').show();
+            $('#chat-area').show();
+            $('#board-wrapper').show();
+            $('#tournament-actions').hide();
+            $('#btn-reset-online').show();
+            $('#btn-salir-game').show();
+            $('#btn-volver-profe').hide();
+            configurarTablero('start');
+            socket.emit('updateProfile', userProfile); // Ensure profile is sent
+            socket.emit('join', { room: r });
+            socket.emit('requestBoardState', r); // Solicitar historial previo
+        }
+
+        function verSeleccionMesas() {
+            ocultarTodo();
+            $('#mesas-area').show();
+            $('#chat-area').show(); // Enable Global Chat
+            socket.emit('getPublicRoomsStatus');
+        }
+
+        function enviarMensaje() {
+            var t = $('#chat-input').val();
+            if (t) {
+                var r = globalChatRoom || ((currentRoom && currentRoom !== "") ? currentRoom : 'general');
+                const senderName = (userProfile && userProfile.name) ? userProfile.name : "Invitado " + socket.id.substr(0, 4);
+                const senderAvatar = (userProfile && userProfile.avatar) ? userProfile.avatar : "👤";
+                socket.emit('chat', {
+                    room: r,
+                    msg: `${senderAvatar} ${senderName}: ${t}`
+                });
+                $('#chat-input').val('');
+            }
+        }
+
+        function playSound(t) {
+            try {
+                var audio = document.getElementById('snd-' + t);
+                if (audio) audio.play().catch(function (e) { });
+            } catch (e) { }
+        }
+
+        function configurarTablero(fen, orientation) {
+            if (!board) return;
+            var orientacion = orientation || 'white';
+            board.orientation(orientacion);
+            if (fen === 'start') {
+                board.start();
+            } else {
+                board.position(fen);
+            }
+            setTimeout(function () {
+                board.resize();
+            }, 200);
+        }
+
+        function handleTapClick(s) {
+            if (game.game_over() || isSpectator) return;
+            if ((game.turn() === 'w' && playerColor === 'b') || (game.turn() === 'b' && playerColor === 'w')) return;
+            movimientoComun(s, (m) => {
+                socket.emit('move', {
+                    room: currentRoom,
+                    move: m,
+                    fen: game.fen()
+                });
+                verificarArbitro();
+                actualizarRelojUI();
+            });
+        }
+
+        function handleTeacherClick(s) {
+            if (!selectedSquare) {
+                if (board.position()[s]) {
+                    selectedSquare = s;
+                    highlightSelected(s);
+                }
+            } else if (selectedSquare === s) {
+                selectedSquare = null;
+                removeHighlights();
+            } else {
+                var p = board.position();
+                p[s] = p[selectedSquare];
+                delete p[selectedSquare];
+                board.position(p);
+                playSound('move');
+                selectedSquare = null;
+                removeHighlights();
+            }
+        }
+
+        function movimientoComun(s, cb) {
+            if (!selectedSquare) {
+                var p = game.get(s);
+                if (p && p.color === game.turn()) {
+                    selectedSquare = s;
+                    highlightSelected(s);
+                    showPossibleMoves(s);
+                }
+                return;
+            }
+            var m = game.move({
+                from: selectedSquare,
+                to: s,
+                promotion: 'q'
+            });
+            if (m === null) {
+                var p = game.get(s);
+                if (p && p.color === game.turn()) {
+                    selectedSquare = s;
+                    highlightSelected(s);
+                    showPossibleMoves(s);
+                } else {
+                    selectedSquare = null;
+                    removeHighlights();
+                }
+            } else {
+                board.position(game.fen());
+                removeHighlights();
+                highlightLastMove(m);
+                playSound(m.captured ? 'capture' : 'move');
+                selectedSquare = null;
+                if (cb) cb(m);
+            }
+        }
+
+        function removeHighlights() {
+            $('.square-55d63').removeClass('highlight-selected highlight-hint highlight-capture highlight-move');
+        }
+
+        function highlightSelected(s) {
+            $('.square-' + s).addClass('highlight-selected');
+        }
+
+        function highlightLastMove(m) {
+            $('.square-55d63').removeClass('highlight-move');
+            if (m) {
+                $('.square-' + m.from).addClass('highlight-move');
+                $('.square-' + m.to).addClass('highlight-move');
+            }
+        }
+
+        function showPossibleMoves(s) {
+            var m = game.moves({
+                square: s,
+                verbose: true
+            });
+            m.forEach(x => $('.square-' + x.to).addClass(x.flags.includes('c') ? 'highlight-capture' : 'highlight-hint'));
+        }
+
+        function iniciarBot() {
+            ocultarTodo();
+            currentMode = 'bot';
+            $('#game-controls').show();
+            $('#bot-header').show();
+            $('#board-wrapper').show();
+            game = new Chess();
+            configurarTablero('start');
+        }
+
+        
+        var botDifficulty = 1; // 0=Random, 1=Medium, 2=Hard
+
+        function handleBotClick(s) {
+            if (game.game_over() || game.turn() === 'b') return;
+            
+            movimientoComun(s, () => {
+                verificarArbitro(); // Check if User mated Bot
+                
+                if (!game.game_over()) {
+                    $('#status-display').text("Pensando...");
+                    
+                    botTimeout = setTimeout(() => {
+                        var bestMove = null;
+                        
+                        if (botDifficulty === 0) {
+                            // Random
+                            var m = game.moves();
+                            bestMove = m[Math.floor(Math.random() * m.length)];
+                        } else {
+                            // Minimax
+                            var depth = (botDifficulty === 1) ? 2 : 3;
+                            bestMove = getBestMove(game, depth);
+                        }
+
+                        if (bestMove) {
+                            game.move(bestMove);
+                            board.position(game.fen());
+                            playSound('move');
+                            verificarArbitro(); // Check if Bot mated User
+                        }
+                        $('#status-display').text("");
+                    }, 500);
+                }
+            });
+        }
+
+        // --- MINIMAX AI ---
+        function getBestMove(game, depth) {
+            var possibleMoves = game.moves();
+            var bestMove = null;
+            var bestValue = -9999;
+
+            // Simple optimization: Shuffle to vary play
+            possibleMoves.sort(() => Math.random() - 0.5);
+
+            for (var i = 0; i < possibleMoves.length; i++) {
+                game.move(possibleMoves[i]);
+                var boardValue = minimax(game, depth - 1, -10000, 10000, false);
+                game.undo();
+                if (boardValue > bestValue) {
+                    bestValue = boardValue;
+                    bestMove = possibleMoves[i];
+                }
+            }
+            return bestMove;
+        }
+
+        function minimax(game, depth, alpha, beta, isMaximizing) {
+            if (depth === 0 || game.game_over()) {
+                return -evaluateBoard(game.board());
+            }
+
+            var possibleMoves = game.moves();
+            if (isMaximizing) {
+                var bestMove = -9999;
+                for (var i = 0; i < possibleMoves.length; i++) {
+                    game.move(possibleMoves[i]);
+                    bestMove = Math.max(bestMove, minimax(game, depth - 1, alpha, beta, !isMaximizing));
+                    game.undo();
+                    alpha = Math.max(alpha, bestMove);
+                    if (beta <= alpha) return bestMove;
+                }
+                return bestMove;
+            } else {
+                var bestMove = 9999;
+                for (var i = 0; i < possibleMoves.length; i++) {
+                    game.move(possibleMoves[i]);
+                    bestMove = Math.min(bestMove, minimax(game, depth - 1, alpha, beta, !isMaximizing));
+                    game.undo();
+                    beta = Math.min(beta, bestMove);
+                    if (beta <= alpha) return bestMove;
+                }
+                return bestMove;
+            }
+        }
+
+        function evaluateBoard(board) {
+            var totalEvaluation = 0;
+            for (var i = 0; i < 8; i++) {
+                for (var j = 0; j < 8; j++) {
+                    totalEvaluation = totalEvaluation + getPieceValue(board[i][j]);
+                }
+            }
+            return totalEvaluation;
+        }
+
+        function getPieceValue(piece) {
+            if (piece === null) return 0;
+            var getAbsoluteValue = function (piece) {
+                if (piece.type === 'p') return 10;
+                if (piece.type === 'r') return 50;
+                if (piece.type === 'n') return 30;
+                if (piece.type === 'b') return 30;
+                if (piece.type === 'q') return 90;
+                if (piece.type === 'k') return 900;
+                return 0;
+            };
+            var absoluteValue = getAbsoluteValue(piece);
+            return piece.color === 'w' ? absoluteValue : -absoluteValue;
+        }
+function iniciarRetos() {
+            currentPuzzleIndex = 0;
+            cargarReto(currentPuzzleIndex);
+        }
+
+        function cargarReto(index) {
+            ocultarTodo();
+            currentMode = 'puzzle';
+            $('#game-controls').show();
+            $('#puzzle-header').show();
+            $('#board-wrapper').show();
+            if (index >= retosDB.length) {
+                userProfile.premiumUnlocked = true;
+                userProfile.skin = 'artist';
+                saveProfile();
+                Swal.fire({
+                    title: '¡Misión Cumplida!',
+                    text: '¡Has desbloqueado el estilo PREMIUM! 🎨',
+                    icon: 'success'
+                }).then(() => volverMenu());
+                return;
+            }
+            var reto = retosDB[index];
+            game = new Chess(reto.fen);
+            configurarTablero(reto.fen, (game.turn() === 'w' ? 'white' : 'black'));
+            $('#puzzle-title').text("Reto " + (index + 1) + ": " + reto.title);
+            $('#puzzle-desc').text(game.turn() === 'w' ? "Blancas juegan y ganan" : "Negras juegan y ganan");
+            puzzleMistakes = 0;
+        }
+
+        function handlePuzzleClick(s) {
+            if (!selectedSquare) {
+                var p = game.get(s);
+                if (p && p.color === game.turn()) {
+                    selectedSquare = s;
+                    highlightSelected(s);
+                }
+                return;
+            }
+            var reto = retosDB[currentPuzzleIndex];
+            if (selectedSquare === reto.from && s === reto.to) {
+                playSound('win');
+                game.move({
+                    from: selectedSquare,
+                    to: s,
+                    promotion: 'q'
+                });
+                board.position(game.fen());
+                if (userProfile.stars <= currentPuzzleIndex) {
+                    userProfile.stars++;
+                    userProfile.elo += 15;
+                    saveProfile();
+                }
+                Swal.fire({
+                    title: '¡Correcto!',
+                    icon: 'success',
+                    timer: 1000,
+                    showConfirmButton: false
+                }).then(() => {
+                    currentPuzzleIndex++;
+                    cargarReto(currentPuzzleIndex);
+                });
+            } else {
+                playSound('error');
+                selectedSquare = null;
+                removeHighlights();
+                puzzleMistakes++;
+                if (puzzleMistakes >= 3) Swal.fire({
+                    title: '💡 Pista',
+                    text: reto.hint,
+                    icon: 'question'
+                });
+                else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Incorrecto'
+                    });
+                }
+            }
+        }
+
+        function entrarAcademia() {
+            ocultarTodo();
+            $('#academy-main-menu').show();
+            var menu = $('#academy-main-menu');
+            menu.empty();
+            menu.append('<h3>🎓 Academia de Ajedrez</h3><div class="academy-menu">' +
+                '<button class="academy-btn btn-blue" onclick="cargarCategoria(\'piezas\')"><span>♟️</span>Piezas</button>' +
+                '<button class="academy-btn btn-green" onclick="cargarCategoria(\'aperturas\')"><span>📖</span>Aperturas</button>' +
+                '<button class="academy-btn btn-red" onclick="cargarCategoria(\'mates\')"><span>⚔️</span>Mates</button>' +
+                '<button class="academy-btn btn-purple" onclick="cargarCategoria(\'finales\')"><span>🏁</span>Finales</button>' +
+                '</div><button class="btn-red" onclick="volverMenu()">Volver</button>');
+        }
+
+        function cargarCategoria(cat) {
+            currentCategory = cat;
+            ocultarTodo();
+            $('#academy-main-menu').show();
+            var menu = $('#academy-main-menu');
+            menu.empty();
+            var db = (cat === 'piezas' ? piezasDB : (cat === 'aperturas' ? aperturasDB : (cat === 'mates' ? matesDB : finalesDB)));
+            var html = `<h3>${cat.toUpperCase()}</h3><div class="academy-menu">`;
+            for (var key in db) {
+                var item = db[key];
+                var name = item.name || key.toUpperCase();
+                html += `<button class="academy-btn btn-teal" onclick="cargarLeccion('${key}')"><span>🎓</span>${name}</button>`;
+            }
+            html += '</div><button class="btn-yellow" onclick="entrarAcademia()">🔙 Atrás</button>';
+            menu.html(html);
+        }
+
+        function cargarLeccion(id) {
+            currentLessonId = id;
+            ocultarTodo();
+            $('#game-controls').show();
+            $('#academy-header').show();
+            $('#board-wrapper').show();
+            $('#academy-controls').show();
+            var db = (currentCategory === 'piezas' ? piezasDB : (currentCategory === 'aperturas' ? aperturasDB : (currentCategory === 'mates' ? matesDB : finalesDB)));
+            var leccion = db[id];
+            $('#academy-title').text(leccion.name || (leccion.t ? leccion.t.split(':')[0] : "Lección"));
+            var fen = leccion.pos || leccion.fen || 'start';
+            if (fen === 'start') {
+                game = new Chess();
+            } else {
+                game = new Chess(fen);
+            }
+            configurarTablero(fen);
+            detenerAnimacion();
+            var texts = leccion.texts || (leccion.t ? [leccion.t] : ["Observa."]);
+            var moves = leccion.moves || [];
+            ejecutarSecuenciaDidactica(texts, moves, leccion.h);
+        }
+
+        function ejecutarSecuenciaDidactica(texts, moves, highlights) {
+            var step = 0;
+
+            function nextStep() {
+                if (step >= texts.length && (!moves || step >= moves.length)) return;
+                if (texts[step]) {
+                    $('#academy-text').text(texts[step]);
+                    hablar(texts[step]);
+                }
+                if (moves && moves[step]) {
+                    setTimeout(() => {
+                        game.move(moves[step]);
+                        board.position(game.fen());
+                        playSound('move');
+                        step++;
+                        academyTimeouts.push(setTimeout(nextStep, 2500));
+                    }, 1000);
+                } else if (highlights) {
+                    setTimeout(() => {
+                        removeHighlights();
+                        highlights.forEach(sq => $('.square-' + sq).addClass('highlight-hint'));
+                    }, 350);
+                }
+            }
+            nextStep();
+        }
+
+        function volverAlPanelProfe() {
+            ocultarTodo();
+            var code = localStorage.getItem('activeTournament');
+            if (code) {
+                // Recuperar estado del torneo sin recargar todo si es posible, 
+                // o simplemente mostrar la vista de lobby
+                $('#teacher-lobby-view').show();
+                $('#chat-area').show();
+                // socket.emit('recoverTournament', code); // Opcional: refrescar datos
+            } else {
+                $('#teacher-dashboard-view').show();
+            }
+        }
+
+        function repetirLeccion() {
+            cargarLeccion(currentLessonId);
+        }
+
+        function resetMainMenu() {
+            entrarAcademia();
+        }
+
+        function abrirBiblioteca() {
+            ocultarTodo();
+            $('#library-view').show();
+            cargarListaLibros();
+        }
+
+        function cargarListaLibros() {
+            $('#library-list').html('<p>Cargando libros...</p>');
+            $.get('/api/libros', function(files) {
+                var list = $('#library-list');
+                list.empty();
+                if (files.length === 0) {
+                    list.append('<p>No hay libros disponibles.</p>');
+                    return;
+                }
+                files.forEach(function(f) {
+                    var btn = $('<a target="_blank" style="text-decoration:none; display:block; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px; border:1px solid #3498db; color:#ecf0f1;"></a>');
+                    btn.attr('href', '/libros/' + encodeURIComponent(f));
+                    btn.text('📄 ' + f.replace('.pdf', ''));
+                    list.append(btn);
+                });
+            }).fail(function() {
+                $('#library-list').html('<p style="color:red;">Error al cargar la biblioteca.</p>');
+            });
+        }
+
+        
+
+        function hablar(t) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(t);
+                u.lang = 'es-ES';
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+        // --- TV MODE LOGIC (PHASE 4) ---
+        var tvAutoSwitch = true;
+        var currentTvRoom = "";
+
+        // --- TV MODE FUNCTIONS ---
+        // (Button removed per user request)
+
+        function initTvMode(code, matches, standings) {
+            ocultarTodo();
+            $('#tv-dashboard-view').show();
+            $('#tv-tournament-code').text(code);
+
+            // Configurar tablero para TV
+            var config = {
+                position: 'start',
+                pieceTheme: getPieceImg,
+                showNotation: true
+            };
+            if (board && board.destroy) board.destroy(); // Ensure destroy exists
+            board = Chessboard('tv-board-container', config);
+            $(window).resize(board.resize);
+
+            if (standings) updateTvStandings(standings);
+            if (matches) renderTvMatches(matches);
+
+            // Unirse como espectador silencioso
+            socket.emit('join', { room: 'lobby_' + code });
+            // Si hay matches, el renderTvMatches inicial ya intentará espectar uno
+        }
+
+        function updateTvStandings(players) {
+            const tbody = $('#tv-standings-body');
+            tbody.empty();
+            // Mostrar Top 10
+            players.slice(0, 10).forEach((p, index) => {
+                let icon = "";
+                if (index === 0) icon = "🥇";
+                else if (index === 1) icon = "🥈";
+                else if (index === 2) icon = "🥉";
+
+                const row = `
+            <tr style="${index < 3 ? 'background:rgba(241, 196, 15, 0.1);' : ''}">
+                <td>${icon || (index + 1)}</td>
+                <td>${p.avatar} ${p.name}</td>
+                <td style="font-weight:bold; color:#f1c40f;">${p.score}</td>
+            </tr>
+        `;
+                tbody.append(row);
+            });
+        }
+
+        function renderTvMatches(matches) {
+            const list = $('#tv-matches-list');
+            list.empty();
+
+            const active = matches.filter(m => m.status === 'playing');
+
+            if (active.length === 0) {
+                list.html('<div style="padding:10px; color:#95a5a6; text-align:center;">Esperando partidas...</div>');
+                return;
+            }
+
+            // Smart Auto-Select (Solo si no se ha seleccionado manualmente o si la sala actual ya terminó)
+            if (tvAutoSwitch && active.length > 0) {
+                let topMatch = null;
+                if (currentStandings.length > 0) {
+                    const leaderId = currentStandings[0].id;
+                    topMatch = active.find(m => m.whiteId === leaderId || m.blackId === leaderId);
+                }
+                if (!topMatch) topMatch = active[0];
+
+                if (currentTvRoom !== topMatch.room) {
+                    spectateTvMatch(topMatch.room);
+                }
+            }
+
+            active.forEach(m => {
+                const isSelected = (m.room === currentTvRoom);
+                const item = `
+            <div class="match-item" onclick="forceTvMatch('${m.room}')" style="cursor:pointer; border-left:4px solid ${isSelected ? '#f1c40f' : 'transparent'}; background:${isSelected ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.2)'};">
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                    <span>⚪ ${m.white}</span>
+                    <span>vs</span>
+                    <span>⚫ ${m.black}</span>
+                </div>
+            </div>
+        `;
+                list.append(item);
+            });
+        }
+
+        function spectateTvMatch(room) {
+            if (currentTvRoom === room) return;
+
+            // Salir de la anterior
+            if (currentTvRoom) socket.emit('leave', currentTvRoom);
+
+            currentTvRoom = room;
+            socket.emit('spectateMatch', room);
+
+            // Actualizar nombres en UI
+            const match = currentMatches.find(m => m.room === room);
+            if (match) {
+                $('#tv-white-name').text("⚪ " + match.white);
+                $('#tv-black-name').text("⚫ " + match.black);
+                $('#tv-match-status').text("En vivo");
+            }
+        }
+
+        function forceTvMatch(room) {
+            tvAutoSwitch = false;
+            spectateTvMatch(room);
+            renderTvMatches(currentMatches);
+        }
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+
+</head>
+
+<body class="classic-skin">
+    <div id="main-container">
+        <h1>♟️ JL Chess Escolar</h1>
+
+        <div id="role-selection-view" class="info-card" style="display:block;">
+            <h3>¿Quién eres?</h3>
+            <div class="role-grid">
+                <div class="role-card" onclick="seleccionarRol('alumno')"><span class="role-icon">🎓</span>
+                    <h3>Alumno</h3>
+                </div>
+                <div class="role-card" onclick="seleccionarRol('profesor')"><span class="role-icon">👨‍🏫</span>
+                    <h3>Profesor</h3>
+                </div>
+            </div>
+            <button class="btn-price" onclick="abrirPrecios()" style="margin-top:20px;">💎 OFERTA ESPECIAL</button>
+        </div>
+
+        <div id="teacher-login-view" class="info-card">
+            <h3>Acceso Profesor</h3>
+            <p style="font-size:0.8rem; color:#f1c40f;">Necesitas una licencia activa para gestionar torneos.</p>
+
+            <input type="text" id="teacherSchoolKeyInput" placeholder="Clave de Escuela (Opcional)"
+                style="margin-bottom:5px; border:2px solid #9b59b6; background:#2c3e50; color:white;">
+
+            <input type="password" id="teacher-key" placeholder="Pega tu Licencia Aquí">
+            <button class="btn-purple" onclick="loginProfesor()">Entrar</button>
+            <button class="btn-price" onclick="abrirPrecios()" style="font-size:12px; padding:8px;">🛒 Comprar
+                Licencia</button>
+            <button class="btn-red" onclick="borrarRol()" style="margin-top:10px;">Volver</button>
+        </div>
+
+        <div id="teacher-dashboard-view" class="info-card">
+            <div class="teacher-card"><span class="avatar-big">👨‍🏫</span><br><b>PANEL PROFE</b></div>
+            <button class="btn-green" onclick="crearTorneo()">⚔️ Nuevo Torneo</button>
+            <div id="recover-section" style="display:none; margin-top:10px;">
+                <button class="btn-yellow" onclick="recuperarTorneoLocal()">🔄 Recuperar Torneo Activo</button>
+            </div>
+            <button class="btn-red" onclick="borrarRol()">Salir</button>
+        </div>
+
+        <div id="teacher-lobby-view" class="info-card">
+            <h3>🏆 Torneo <span id="lobby-code" style="color:#f1c40f;">...</span></h3>
+            <p id="mode-display" style="font-size:0.8rem; color:#bdc3c7;">Modo: Virtual</p>
+
+            <div id="lobby-content">
+                <div id="manual-add-section"
+                    style="display:none; background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <input type="text" id="manualName" placeholder="Nombre Alumno" style="margin:5px auto; width:80%;">
+                    <button class="btn-blue" onclick="agregarJugadorManual()" style="width:auto; padding:8px;">➕
+                        Agregar</button>
+                </div>
+                <p>Alumnos inscritos: <span id="player-count">0</span></p>
+                <div id="lobby-players" style="margin-bottom:15px;"></div>
+                <button class="btn-green" onclick="iniciarRonda()">▶️ INICIAR RONDA</button>
+            </div>
+
+            <div id="matches-content" style="display:none;">
+                <h4>Partidas en Curso</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <button class="btn-blue" onclick="generarEmparejamientosPDF()"
+                        style="font-size:12px; padding:5px; width:48%;">🖨️ Emparejamientos</button>
+                    <button class="btn-purple" onclick="generarTablaPDF()"
+                        style="font-size:12px; padding:5px; width:48%;">📊 Tabla Posiciones</button>
+                </div>
+                <div id="matches-list" style="margin-top:10px;"></div>
+                <h4 style="margin-top:20px; color:#f1c40f;">📊 Posiciones (En Vivo)</h4>
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Jugador</th>
+                            <th>Pts</th>
+                            <th>BH</th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body"></tbody>
+                </table>
+                <button class="btn-green" onclick="iniciarRonda()" style="margin-top:20px;">▶️ SIGUIENTE RONDA</button>
+            </div>
+            <button class="btn-red" onclick="finalizarTorneo()">🏁 FINALIZAR TORNEO</button>
+        </div>
+
+        <div id="final-results-view" class="info-card">
+            <h2 style="color:#FFD700; margin-bottom:5px;">🏆 TORNEO FINALIZADO</h2>
+            <p style="color:#f1c40f;">¡Felicidades a todos!</p>
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th>Lugar</th>
+                        <th>Jugador</th>
+                        <th>Puntos</th>
+                        <th>BH</th>
+                    </tr>
+                </thead>
+                <tbody id="final-standings-body"></tbody>
+            </table>
+            <button id="btn-pdf" class="btn-blue" onclick="generarReporteFinalPDF()"
+                style="margin-top:20px; display:none;">📄 Descargar Reporte Final</button>
+            <button class="btn-red" onclick="cerrarResultados()" style="margin-top:10px;">Salir</button>
+        </div>
+
+        <!-- TV DASHBOARD VIEW (Phase 4) -->
+        <div id="tv-dashboard-view" style="display:none; height:100vh; overflow:hidden; background:#1a1a1a;">
+            <div id="tv-header"
+                style="height:60px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:#2c3e50; border-bottom:2px solid #f1c40f;">
+                <h2 style="margin:0; color:#fff;">📺 TV MODE - <span id="tv-tournament-code"
+                        style="color:#f1c40f;">...</span></h2>
+                <div style="color:#95a5a6; font-size:0.9rem;">JL Chess Escolar</div>
+            </div>
+            <div style="display:flex; height:calc(100% - 60px);">
+                <!-- LEFT: Main Board -->
+                <div
+                    style="flex:2; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:#222;">
+                    <div id="tv-player-info"
+                        style="width:100%; display:flex; justify-content:space-between; max-width:600px; margin-bottom:10px; font-size:1.5rem; font-weight:bold;">
+                        <span id="tv-black-name">⚫ Negras</span>
+                        <span id="tv-black-clock"
+                            style="background:#333; padding:5px 15px; border-radius:5px;">10:00</span>
+                    </div>
+                    <div id="tv-board-container" style="width:600px; height:600px;"></div>
+                    <div id="tv-player-info-white"
+                        style="width:100%; display:flex; justify-content:space-between; max-width:600px; margin-top:10px; font-size:1.5rem; font-weight:bold;">
+                        <span id="tv-white-name">⚪ Blancas</span>
+                        <span id="tv-white-clock"
+                            style="background:#333; padding:5px 15px; border-radius:5px;">10:00</span>
+                    </div>
+                    <div id="tv-match-status" style="margin-top:15px; color:#f1c40f; font-size:1.2rem;">Esperando
+                        partida...</div>
+                </div>
+                <!-- RIGHT: Sidebar -->
+                <div style="flex:1; background:#2c3e50; border-left:2px solid #34495e; padding:10px; overflow-y:auto;">
+                    <h3 style="color:#f1c40f; border-bottom:1px solid #7f8c8d; padding-bottom:5px;">🏆 Posiciones</h3>
+                    <table class="standings-table" style="font-size:0.8rem; margin-bottom:20px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Jugador</th>
+                                <th>Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tv-standings-body"></tbody>
+                    </table>
+
+                    <h3 style="color:#3498db; border-bottom:1px solid #7f8c8d; padding-bottom:5px;">⚔️ En Curso</h3>
+                    <div id="tv-matches-list">
+                        <div class="match-item">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="setup-view" class="info-card">
+            <h3>¡Accede o Crea tu Cuenta!</h3>
+            
+            <input type="text" id="schoolKeyInput" placeholder="Clave de Escuela (Opcional)"
+                style="margin-bottom:5px; border:2px solid #3498db; background:#2c3e50; color:white;">
+            <div id="recent-schools-list"
+                style="display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-bottom:15px;"></div>
+
+            <div style="margin-bottom:10px; text-align:left; font-size:0.9rem;">
+                <label>Subir Foto de Perfil (Opcional):</label>
+                <input type="file" id="avatarFile" accept="image/*" style="display:block; margin-top:5px; width:100%; color:white;">
+            </div>
+            
+            <div class="avatar-grid" id="avatar-selector"></div>
+            
+            <input type="text" id="newPlayerName" placeholder="Tu Nombre de Usuario" maxlength="15">
+            <input type="password" id="playerPassword" placeholder="Contraseña o PIN" maxlength="20" style="width:80%; padding:10px; margin:5px; border-radius:5px; text-align:center; font-size:1.2rem; background:rgba(0,0,0,0.3); color:white; border:2px solid #34495e;">
+            
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                <button class="btn-green" onclick="loginUser()">Entrar</button>
+                <button class="btn-blue" onclick="registerUser()">Registrarse</button>
+            </div>
+            
+            <button class="btn-red" onclick="borrarRol()"
+                style="background:transparent; margin-top:10px; font-size:0.8rem;">Cambiar a Profesor</button>
+        </div>
+
+        <div id="student-menu-view" class="info-card">
+            <div class="player-card">
+                <span id="card-avatar" class="avatar-big">😎</span>
+                <div class="player-name" id="card-name">NOMBRE</div>
+                <div style="font-size:0.9rem; color:#f1c40f; margin-top:5px;">Ranking ELO: <span
+                        id="card-elo">400</span></div>
+            </div>
+            <button class="btn-yellow" onclick="ingresarTorneo()" style="border:2px solid #f1c40f; padding:15px;">🏆
+                UNIRSE A TORNEO</button>
+            <div id="edu-buttons-container"
+                style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
+                <button class="btn-green" onclick="verSeleccionMesas()">🌍 ONLINE</button>
+                <button class="btn-teal" onclick="iniciarBot()">🤖 VS BOT</button>
+                <button class="btn-yellow" onclick="iniciarRetos()">🎓 RETOS</button>
+                <button class="btn-orange" onclick="entrarAcademia()">📚 ACADEMIA</button>
+            </div>
+            <button id="btn-biblioteca" class="btn-teal" onclick="abrirBiblioteca()" style="margin-top:8px;">📖 BIBLIOTECA</button>
+            <button id="btn-honor" class="btn-blue" onclick="verCuadroHonor()" style="margin-top:8px;">🏆 HONOR</button>
+            <button id="btn-pizarra" class="btn-purple" onclick="iniciarPizarra()" style="margin-top:8px;">👨‍🏫
+                PIZARRA</button>
+            <button id="btn-style" class="btn-teal" onclick="toggleSkin()" style="margin-top:8px; font-size:0.8rem;">🎨
+                ESTILO (PREMIO)</button>
+            <button onclick="borrarRol()"
+                style="background:#7f8c8d; font-size:10px; width:auto; padding:5px; margin-top:15px;">⚠️ SALIR</button>
+        
+            <div style="margin-top:15px; border-top:1px solid #7f8c8d; padding-top:10px; text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><h4 style="color:#f1c40f; margin-bottom:5px;">🌐 Jugadores en Línea</h4><button class="btn-green" style="font-size:0.8rem; padding:5px 10px;" onclick="compartirEnlaceReto()">🔗 Crear Enlace de Reto</button></div>
+                <div id="online-users-list" style="display:flex; flex-direction:column; gap:5px; max-height:150px; overflow-y:auto;">
+                    <span style="font-size:0.8rem; color:#bdc3c7;">Nadie más en línea...</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="student-lobby-view" class="info-card">
+            <h3>🏆 Sala de Espera</h3>
+            <p>Conectado. Esperando ronda...</p>
+            <h4 style="margin-top:15px; color:#f1c40f;">📊 Tabla de Posiciones</h4>
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Pts</th>
+                        <th>BH</th>
+                    </tr>
+                </thead>
+                <tbody id="student-standings-body"></tbody>
+            </table>
+            <div class="tournament-code" style="font-size:1.5rem; margin-top:15px;">♟️</div>
+            <p id="student-status-msg" style="margin-top:10px; color:#f1c40f;">Prepara tu mente 🧠</p>
+            <button class="btn-red" onclick="volverMenu()" style="margin-top:20px;">Salir del Torneo</button>
+        </div>
+
+        <div id="game-controls" class="info-card">
+            <div id="online-header" style="display: none;">
+                <div id="status-display" style="color:#f1c40f; font-weight:bold; margin-bottom:5px;"></div>
+                <div id="clocks">
+                    <div id="clock-w" class="clock-box">⚪ <span id="time-w">10:00</span></div>
+                    <div id="clock-b" class="clock-box">⚫ <span id="time-b">10:00</span></div>
+                </div>
+                <div class="action-row" id="tournament-actions" style="display:none;">
+                    <button class="btn-draw" onclick="pedirTablas()">🤝 Tablas</button>
+                    <button class="btn-resign" onclick="rendirse()">🏳️ Rendirse</button>
+                </div>
+                <button onclick="forzarReinicioOnline()" id="btn-reset-online"
+                    style="font-size:10px; background:#e67e22; padding:5px;">🔄 Reiniciar Partida</button>
+            </div>
+            <div id="bot-header" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0;">🤖 Bot</h3>
+                    <select id="bot-diff" onchange="botDifficulty = parseInt(this.value)" style="width:auto; margin:0; padding:5px; font-size:12px;">
+                        <option value="0">Fácil (Azar)</option>
+                        <option value="1" selected>Medio</option>
+                        <option value="2">Difícil</option>
+                    </select>
+                    <button onclick="iniciarBot()" style="width:auto; margin:0; padding:5px 10px;">🔄</button>
+                    <button class="btn-red" onclick="volverMenu()" style="width:auto; padding:5px 10px; font-size:12px; margin:0 0 0 5px;">✖</button>
+                </div>
+            </div>
+            <div id="puzzle-header" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 id="puzzle-title" style="margin:0;">Reto</h3><button class="btn-red" onclick="volverMenu()"
+                        style="width:auto; padding:5px 10px; font-size:12px; margin:0;">✖ Salir</button>
+                </div>
+                <p id="puzzle-desc" style="font-style:italic; color:#bdc3c7;">...</p>
+            </div>
+            <div id="teacher-header" style="display: none;">
+                <h3>👨‍🏫 Pizarra</h3>
+                <div style="display:flex; gap:5px; justify-content:center;"><button class="btn-orange"
+                        onclick="limpiarPizarra()">Limpiar</button><button class="btn-red"
+                        onclick="volverMenu()">Salir</button></div>
+            </div>
+            <div id="academy-header" style="display: none;">
+                <h3 id="academy-title">🎓 Academia</h3>
+                <div id="academy-controls" style="display:none;">
+                    <div id="academy-text" class="academy-text-box">...</div><button class="btn-green"
+                        onclick="repetirLeccion()">🔄 Repetir</button><button class="btn-yellow"
+                        onclick="resetMainMenu()">🔙 Volver Menú</button>
+                </div>
+            </div>
+            <button id="btn-salir-game" onclick="volverMenu()" class="btn-red" style="margin-top:5px;">🔙 SALIR AL
+                MENÚ</button>
+            <button id="btn-volver-profe" onclick="volverAlPanelProfe()" class="btn-yellow"
+                style="margin-top:5px; display:none;">🔙 VOLVER AL PANEL</button>
+        </div>
+
+        <div id="board-wrapper">
+            <div id="board"></div>
+            <div id="board-overlay"></div>
+        </div>
+        <div id="academy-main-menu" class="info-card"></div>
+        <div id="chat-area" class="info-card"
+            style="display: flex !important; flex-direction: row; gap: 10px; height: 300px;">
+            <div id="chat-left-col">
+                <div id="chat-box">
+                    <p style="color:#f1c40f; text-align:center; margin:0 0 10px 0;">💬 Chat del Torneo</p>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="chat-input" placeholder="Escribe aquí..."
+                        onkeypress="if(event.key === 'Enter') enviarMensaje()">
+                    <button style="width:30%; margin:0;" onclick="enviarMensaje()">Enviar</button>
+                </div>
+            </div>
+            <div id="chat-right-col" style="background: rgba(0,0,0,0.4); border: 1px solid #f1c40f;">
+                <p style="color:#f1c40f; font-size:0.8rem; margin:0 0 5px 0; font-weight:bold;">🟢 En Línea</p>
+                <div id="online-users-list"><span style="font-size:0.7rem; color:#bdc3c7;">Esperando...</span></div>
+            </div>
+        </div>
+        <div id="mesas-area" class="info-card">
+            <h3>Salas Públicas</h3><select id="roomSelect">
+                <option>Mesa 1</option>
+                <option>Mesa 2</option>
+                <option>Mesa 3</option>
+                <option>Mesa 4</option>
+                <option>Mesa 5</option>
+                <option>Mesa 6</option>
+                <option>Mesa 7</option>
+                <option>Mesa 8</option>
+                <option>Mesa 9</option>
+                <option>Mesa 10</option>
+                <option>Mesa 11</option>
+                <option>Mesa 12</option>
+                <option>Mesa 13</option>
+                <option>Mesa 14</option>
+                <option>Mesa 15</option>
+                <option>Mesa 16</option>
+                <option>Mesa 17</option>
+                <option>Mesa 18</option>
+                <option>Mesa 19</option>
+                <option>Mesa 20</option>
+            </select><button class="btn-green" onclick="unirsePartida()">Entrar</button><button class="btn-red"
+                onclick="volverMenu()">Cancelar</button>
+        </div>
+        <div id="ranking-view" class="info-card">
+            <h3>🏆 Honor</h3>
+            <div id="ranking-grid" class="honor-grid"></div><button class="btn-red"
+                onclick="volverMenu()">Volver</button>
+        </div>
+
+        <div id="library-view" class="info-card">
+            <h3>📖 Biblioteca de Ajedrez</h3>
+            <div id="library-list" style="margin-top:15px; max-height:300px; overflow-y:auto; text-align:left; display:flex; flex-direction:column; gap:8px;"></div>
+            <button class="btn-red" onclick="volverMenu()">Volver</button>
+        </div>
+
+        <div id="library-view" class="info-card">
+            <h3>📖 Biblioteca de Ajedrez</h3>
+            <p style="color:#bdc3c7; font-size:0.9rem;">Sección en construcción. Próximamente podrás descargar libros y materiales de estudio aquí.</p>
+            <button class="btn-red" onclick="volverMenu()">Volver</button>
+        </div>
+
+        <div id="pricing-modal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="close-modal" onclick="cerrarPrecios()">&times;</span>
+                <h2 style="color:#f1c40f; text-align:center;">💎 OFERTA DE INTRODUCCIÓN</h2>
+                <p style="text-align:center; color:#bdc3c7; font-size:0.9rem;">
+                    Selecciona tu plan para pagar.<br>Luego confirma tu pago en WhatsApp para activar.
+                </p>
+
+                <div class="price-card">
+                    <span class="oferta-tag">POPULAR</span>
+                    <div class="price-title">🌟 Plan PREMIUM (Escuelas)</div>
+                    <span class="price-cost">$500 MXN / Año</span>
+                    <div class="price-features">
+                        <ul>
+                            <li>✅ Torneos Ilimitados (Virtual/Presencial)</li>
+                            <li>✅ Generación de Reportes PDF</li>
+                            <li>✅ Acceso a ACADEMIA (Clases Interactivas)</li>
+                            <li>✅ Jugar contra BOT y RETOS Tácticos</li>
+                            <li>✅ Tablero estilo Premium</li>
+                        </ul>
+                    </div>
+                    <button id="btn-prem-paypal" class="btn-buy" onclick="irAPaypal('premium')">1. PAGAR CON
+                        PAYPAL</button>
+                    <button id="btn-prem-wsp" class="btn-buy btn-whatsapp" onclick="irAWhatsapp('premium')"
+                        style="display:none;">2. ENVIAR COMPROBANTE (WhatsApp)</button>
+                </div>
+
+                <div class="price-card">
+                    <div class="price-title">♟️ Plan LIGHT (Organizador)</div>
+                    <span class="price-cost">$300 MXN / Año</span>
+                    <div class="price-features">
+                        <ul>
+                            <li>✅ Gestión de Torneos Presenciales</li>
+                            <li>✅ Emparejamientos Suizos Automáticos</li>
+                            <li>✅ Reportes PDF básicos</li>
+                            <li>❌ Sin Academia ni Bot</li>
+                        </ul>
+                    </div>
+                    <button id="btn-light-paypal" class="btn-buy" onclick="irAPaypal('light')"
+                        style="background:#f39c12;">1. PAGAR CON PAYPAL</button>
+                    <button id="btn-light-wsp" class="btn-buy btn-whatsapp" onclick="irAWhatsapp('light')"
+                        style="display:none;">2. ENVIAR COMPROBANTE (WhatsApp)</button>
+                </div>
+
+                <p style="text-align:center; font-size:0.8rem; margin-top:15px; color:#bdc3c7;">
+                    🔒 Compra 100% Segura. Activación manual inmediata.
+                </p>
+                <button class="btn-red" onclick="cerrarPrecios()">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="snd-move"
+        src="https://raw.githubusercontent.com/lichess-org/lila/master/public/sound/standard/Move.mp3"></audio>
+    <audio id="snd-capture"
+        src="https://raw.githubusercontent.com/lichess-org/lila/master/public/sound/standard/Capture.mp3"></audio>
+    <audio id="snd-win"
+        src="https://raw.githubusercontent.com/lichess-org/lila/master/public/sound/standard/Victory.mp3"></audio>
+    <audio id="snd-error"
+        src="https://raw.githubusercontent.com/lichess-org/lila/master/public/sound/standard/GenericNotify.mp3"></audio>
+
+    <script src="js/client.js"></script>
+</body>
+
+</html>
