@@ -18,10 +18,26 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((k) => Promise.all(k.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); }))));
-  return self.clients.claim();
+  e.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); }))
+    ).then(() => {
+      // Notifica a todos los clientes que hay nueva versión
+      self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+        clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED', version: CACHE_NAME }));
+      });
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener('fetch', (e) => {
+  // Para index.html siempre intenta red primero (para detectar cambios)
+  if (e.request.url.endsWith('/') || e.request.url.endsWith('index.html')) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
   e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
-});
+});

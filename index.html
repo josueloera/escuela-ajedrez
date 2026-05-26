@@ -90,9 +90,32 @@
         .avatar-option.selected { border-color: #f1c40f; background: rgba(241, 196, 15, 0.2); transform: scale(1.1); }
         .honor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
         .honor-card { background: #ecf0f1; color: #2c3e50; border-radius: 8px; padding: 10px; }
+        /* BANNER ACTUALIZACIÓN */
+        #update-banner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 9999;
+            background: linear-gradient(135deg, #16a085, #1abc9c);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to   { transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+    <div id="update-banner" onclick="actualizarApp()">
+        🔄 ¡Nueva versión disponible! Toca aquí para actualizar.
+    </div>
     <div id="main-container">
         <h1>♟️ JL Chess Escolar</h1>
 
@@ -555,7 +578,25 @@
         function limpiarTodo() { if(confirm("¿Borrar?")) { localStorage.clear(); location.reload(); } }
         function playSound(t) { try{ document.getElementById('snd-'+t).play().catch(e=>{}); }catch(e){} }
         
-        if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+                // Revisa actualizaciones cada vez que la app vuelve al foco
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') reg.update();
+                });
+            });
+            // Escucha mensaje del SW cuando hay nueva versión
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'SW_UPDATED') {
+                    document.getElementById('update-banner').style.display = 'block';
+                }
+            });
+            // Si el controlador cambia (nuevo SW tomó control) → recarga
+            var refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                if (!refreshing) { refreshing = true; location.reload(); }
+            });
+        }
 
         // --- ACTUALIZAR APP (fuerza recarga limpia del caché) ---
         function actualizarApp() {
