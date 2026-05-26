@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>JL Chess Escolar - V5.7</title>
+    <title>JL Chess Escolar - V5.8</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
@@ -179,6 +179,7 @@
             <button class="btn-blue" onclick="verCuadroHonor()" style="margin-top: 8px;">🏆 CUADRO DE HONOR</button>
             <button class="btn-purple" onclick="iniciarPizarra()" style="margin-top: 8px;">👨‍🏫 PIZARRA PROFE</button>
             <button onclick="borrarRol()" style="margin-top:20px; font-size:10px; background:#7f8c8d; width:auto; padding:5px;">⚠️ SALIR / CAMBIAR ROL</button>
+            <button onclick="actualizarApp()" style="margin-top:8px; font-size:11px; background:#16a085; color:white; width:auto; padding:6px 14px; border-radius:8px;">🔄 ACTUALIZAR APP</button>
         </div>
 
         <div id="student-lobby-view" class="info-card" style="display: none;">
@@ -555,6 +556,25 @@
         function playSound(t) { try{ document.getElementById('snd-'+t).play().catch(e=>{}); }catch(e){} }
         
         if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+        // --- ACTUALIZAR APP (fuerza recarga limpia del caché) ---
+        function actualizarApp() {
+            if (!confirm('¿Actualizar la app? Se recargará la página.')) return;
+            if ('serviceWorker' in navigator && 'caches' in window) {
+                caches.keys().then(function(cacheNames) {
+                    return Promise.all(cacheNames.map(function(cacheName) {
+                        return caches.delete(cacheName);
+                    }));
+                }).then(function() {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        regs.forEach(function(reg) { reg.unregister(); });
+                        location.reload(true);
+                    });
+                });
+            } else {
+                location.reload(true);
+            }
+        }
     </script>
 </body>
 </html>

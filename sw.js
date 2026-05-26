@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jl-chess-v5.6-final'; 
+const CACHE_NAME = 'jl-chess-v5.8';
 
 const ASSETS = [
   './',
