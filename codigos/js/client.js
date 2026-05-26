@@ -787,7 +787,10 @@
         }
 
         function detenerReloj() {
-            if (timerInterval) clearInterval(timerInterval);
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
         }
 
         function actualizarRelojUI() {
@@ -1140,7 +1143,7 @@
                 $('#tournament-actions').show();
                 configurarTablero('start', playerColor === 'w' ? 'white' : 'black');
                 Swal.fire('¡A Jugar!', 'Tu rival es: ' + data.opponent, 'success');
-                iniciarReloj();
+                // iniciarReloj() removed to start on first move
             });
             socket.on('tournamentBye', function (msg) {
                 Swal.fire('Descanso', msg, 'info');
@@ -1221,13 +1224,16 @@
                 board.position(game.fen());
                 playSound(data.move.captured ? 'capture' : 'move');
                 verificarArbitro();
+                if (game.history().length === 1 && !timerInterval) iniciarReloj();
                 actualizarRelojUI();
             });
             socket.on('playerRole', function (role) {
                 playerColor = (role === 'spectator') ? 'w' : role;
                 isSpectator = (role === 'spectator');
                 board.orientation(playerColor === 'b' ? 'black' : 'white');
-                if (!isSpectator && currentMode === 'online') iniciarReloj();
+                if (!isSpectator && currentMode === 'online') {
+                    if (game.history().length > 0 && !timerInterval) iniciarReloj();
+                }
             });
             socket.on('chat', (m) => {
                 var box = $('#chat-box');
@@ -1605,6 +1611,7 @@
                     fen: game.fen()
                 });
                 verificarArbitro();
+                if (game.history().length === 1 && !timerInterval) iniciarReloj();
                 actualizarRelojUI();
             });
         }
