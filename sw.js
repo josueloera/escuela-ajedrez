@@ -1,8 +1,9 @@
-const CACHE_NAME = 'jl-chess-v5.8';
+const CACHE_NAME = 'jl-chess-v5.9';
 
 const ASSETS = [
   './',
   './index.html',
+  './script.js',
   './logo.jpg',
   'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js',
@@ -32,12 +33,24 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Para index.html siempre intenta red primero (para detectar cambios)
-  if (e.request.url.endsWith('/') || e.request.url.endsWith('index.html')) {
+  const url = new URL(e.request.url);
+  const isLocal = url.origin === self.location.origin;
+
+  // Para todos los archivos locales: red primero, caché como respaldo
+  if (isLocal) {
     e.respondWith(
-      fetch(e.request).catch(() => caches.match(e.request))
+      fetch(e.request)
+        .then((response) => {
+          // Guardar respuesta fresca en caché
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(e.request))
     );
     return;
   }
+
+  // Para recursos externos (CDN): caché primero para rendimiento
   e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
 });
