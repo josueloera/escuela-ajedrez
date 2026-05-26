@@ -9,7 +9,7 @@ const axios = require('axios');
 const multer = require('multer');
 const webpush = require('web-push');
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: path.join(__dirname, 'uploads/') });
 
 // VAPID Keys para Notificaciones Push
 const publicVapidKey = 'BP0E6v9iIvVnTh9tZz3tGOUkTABUUq-G0Z0_lHTs5Mu-5b3sS3fUOzN7WBpUMws64FJj4hx12AeFpT4MxI3RW3E';
@@ -20,7 +20,7 @@ const onlineUsers = {}; // username -> socket.id
 
 
 const { JsonDB, Config } = require('node-json-db');
-const db = new JsonDB(new Config("database", true, true, '/'));
+const db = new JsonDB(new Config(path.join(__dirname, "database"), true, true, '/'));
 
 app.use(express.static(path.join(__dirname, '/')));
 
@@ -628,6 +628,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('chat', (data) => { if (data.room && data.msg) io.to(data.room).emit('chat', data.msg); });
+
+    socket.on('leave', (room) => {
+        if (room) socket.leave(room);
+    });
 
     socket.on('join', async (data) => {
         await socket.join(data.room);
