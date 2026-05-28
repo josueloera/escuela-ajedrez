@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jl-chess-v16-local-cache';
+const CACHE_NAME = 'jl-chess-v17-local-cache';
 
 const urlsToCache = [
   './',
