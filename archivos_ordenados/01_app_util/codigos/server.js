@@ -94,7 +94,6 @@ app.get('/api/libros', (req, res) => {
 
 let tournaments = {};
 let publicRooms = {}; // Phase 5: Public Rooms Status
-const premiumCodes = new Set();
 
 // La inicialización de la BD ahora es asíncrona en initServer() al final del archivo.
 
@@ -244,16 +243,6 @@ function emitirRanking(code, players) {
 }
 
 io.on('connection', (socket) => {
-    // --- PREMIUM AI CODE HANDLING ---
-    socket.on('createPremiumCode', () => {
-        const code = generarCodigo();
-        premiumCodes.add(code);
-        socket.emit('premiumCodeCreated', code);
-    });
-    socket.on('verifyPremiumCode', (code) => {
-        const valid = premiumCodes.has(code);
-        socket.emit('premiumCodeResult', { valid });
-    });
 
     
     socket.on('updateProfile', (data) => { 

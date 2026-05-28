@@ -436,7 +436,6 @@
 
         function ocultarTodo() {
             $('#role-selection-view, #teacher-login-view, #teacher-dashboard-view, #teacher-lobby-view, #setup-view, #student-menu-view, #student-lobby-view, #game-controls, #board-wrapper, #academy-main-menu, #ranking-view, #mesas-area, #chat-area, #online-header, #bot-header, #puzzle-header, #teacher-header, #academy-header, #final-results-view, #library-view').hide();
-            $('#ai-assistant-container').hide();
             game = new Chess();
             selectedSquare = null;
             removeHighlights();
@@ -452,7 +451,6 @@
                 ocultarTodo();
                 if (r === 'teacher') {
                     $('#teacher-dashboard-view').show();
-                    $('#teacher-premium-btn').show();
                     var activeTour = localStorage.getItem('activeTournament');
                     if (activeTour) $('#recover-section').show();
                 } else {
@@ -598,11 +596,10 @@
             }
 
             var r = localStorage.getItem('jlUserRole');
-            if (r === 'teacher') { $('#teacher-dashboard-view').show(); $('#teacher-premium-btn').show(); }
+            if (r === 'teacher') $('#teacher-dashboard-view').show();
             else if (userProfile.name) {
                 $('#student-menu-view').show();
                 updateCardUI();
-                updateStudentMenuAIButton();
             } else $('#setup-view').show();
             if (currentRoom) {
                 if (socket) socket.emit('leave', currentRoom);
@@ -634,7 +631,6 @@
 
                 $('#student-menu-view').show();
                 updateCardUI();
-                updateStudentMenuAIButton();
                 applySkin();
                 if (socket) socket.emit('updateProfile', userProfile);
                 $('#chat-area').show(); // Enable Global Chat
@@ -791,10 +787,7 @@
         }
 
         function detenerReloj() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
+            if (timerInterval) clearInterval(timerInterval);
         }
 
         function actualizarRelojUI() {
@@ -1147,7 +1140,7 @@
                 $('#tournament-actions').show();
                 configurarTablero('start', playerColor === 'w' ? 'white' : 'black');
                 Swal.fire('¡A Jugar!', 'Tu rival es: ' + data.opponent, 'success');
-                // iniciarReloj() removed to start on first move
+                iniciarReloj();
             });
             socket.on('tournamentBye', function (msg) {
                 Swal.fire('Descanso', msg, 'info');
@@ -1228,16 +1221,13 @@
                 board.position(game.fen());
                 playSound(data.move.captured ? 'capture' : 'move');
                 verificarArbitro();
-                if (game.history().length === 1 && !timerInterval) iniciarReloj();
                 actualizarRelojUI();
             });
             socket.on('playerRole', function (role) {
                 playerColor = (role === 'spectator') ? 'w' : role;
                 isSpectator = (role === 'spectator');
                 board.orientation(playerColor === 'b' ? 'black' : 'white');
-                if (!isSpectator && currentMode === 'online') {
-                    if (game.history().length > 0 && !timerInterval) iniciarReloj();
-                }
+                if (!isSpectator && currentMode === 'online') iniciarReloj();
             });
             socket.on('chat', (m) => {
                 var box = $('#chat-box');
@@ -1256,28 +1246,6 @@
                     if (count >= 2) icon = "🔴"; // Ocupado
 
                     select.append(`<option value="${r}">${icon} ${r} (${count}/2)</option>`);
-                }
-            });
-
-            socket.on('premiumCodeCreated', function (code) {
-                Swal.fire({
-                    title: 'Código IA Premium',
-                    html: `Comparte este código de 4 dígitos con tus alumnos:<br><br><b style="font-size: 2.5rem; color: #f1c40f; letter-spacing: 2px;">${code}</b>`,
-                    icon: 'success'
-                });
-            });
-
-            socket.on('premiumCodeResult', function (data) {
-                if (data.valid) {
-                    localStorage.setItem('jlChessPremiumAI', 'true');
-                    updateStudentMenuAIButton();
-                    Swal.fire({
-                        title: '¡Activado!',
-                        text: 'El Entrenador IA se ha activado para esta sesión. Ahora puedes ir a "🤖 VS BOT" y solicitar consejos durante tu juego.',
-                        icon: 'success'
-                    });
-                } else {
-                    Swal.fire('Código Incorrecto', 'El código ingresado no es válido. Consulta con tu profesor.', 'error');
                 }
             });
         }
@@ -1637,7 +1605,6 @@
                     fen: game.fen()
                 });
                 verificarArbitro();
-                if (game.history().length === 1 && !timerInterval) iniciarReloj();
                 actualizarRelojUI();
             });
         }
@@ -1688,7 +1655,6 @@
                     removeHighlights();
                 }
             } else {
-                $('#ai-assistant-container').fadeOut(200);
                 board.position(game.fen());
                 removeHighlights();
                 highlightLastMove(m);
@@ -1730,115 +1696,6 @@
             $('#board-wrapper').show();
             game = new Chess();
             configurarTablero('start');
-            
-            if (localStorage.getItem('jlChessPremiumAI') === 'true') {
-                $('#bot-ai-hint-btn').show();
-            } else {
-                $('#bot-ai-hint-btn').hide();
-            }
-        }
-
-        // --- PREMIUM AI COACH CLIENT FUNCTIONS ---
-        function generarCodigoPremium() {
-            if (socket) socket.emit('createPremiumCode');
-        }
-
-        function clickAICoach() {
-            const isPremium = localStorage.getItem('jlChessPremiumAI') === 'true';
-            if (isPremium) {
-                Swal.fire({
-                    title: 'Entrenador IA Activo',
-                    text: 'El Entrenador IA ya está activado. Ve a la sección "🤖 VS BOT" para jugar contra la computadora y solicitar sugerencias en tiempo real.',
-                    icon: 'success'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Activar Entrenador IA',
-                    text: 'Ingresa el código premium de 4 dígitos proporcionado por tu profesor:',
-                    input: 'text',
-                    inputPlaceholder: 'Código de 4 dígitos',
-                    showCancelButton: true,
-                    confirmButtonText: 'Activar',
-                    cancelButtonText: 'Cancelar',
-                    inputValidator: (value) => {
-                        if (!value || value.trim().length !== 4) {
-                            return 'Debes ingresar un código de 4 dígitos';
-                        }
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const code = result.value.trim();
-                        if (socket) socket.emit('verifyPremiumCode', code);
-                    }
-                });
-            }
-        }
-
-        function updateStudentMenuAIButton() {
-            const isPremium = localStorage.getItem('jlChessPremiumAI') === 'true';
-            if (isPremium) {
-                $('#btn-ai-coach').text('🤖 ENTRENADOR IA (ACTIVO)');
-                $('#btn-ai-coach').css('background', '#27ae60'); // Green
-            } else {
-                $('#btn-ai-coach').text('🤖 ENTRENADOR IA (PREMIUM)');
-                $('#btn-ai-coach').css('background', '#8e44ad'); // Purple
-            }
-        }
-
-        function solicitarIA() {
-            if (typeof game === 'undefined' || game.game_over()) return;
-            
-            // Mostrar asistente pensando
-            $('#ai-assistant-text').html('<i>Analizando posición...</i>');
-            $('#ai-assistant-container').css({ display: 'flex' }).hide().fadeIn(300);
-
-            setTimeout(() => {
-                try {
-                    // Crear copia del juego para analizar
-                    var tempGame = new Chess(game.fen());
-                    
-                    // Usar minimax a profundidad 4 para mejor análisis
-                    var possibleMoves = tempGame.moves({ verbose: true });
-                    var bestMove = null;
-                    var bestValue = -99999;
-
-                    for (var i = 0; i < possibleMoves.length; i++) {
-                        tempGame.move(possibleMoves[i].san);
-                        // Evaluar desde la perspectiva del oponente (negro), negar para obtener valor para blancas
-                        var boardValue = -minimax(tempGame, 3, -10000, 10000, true);
-                        tempGame.undo();
-                        if (boardValue > bestValue) {
-                            bestValue = boardValue;
-                            bestMove = possibleMoves[i];
-                        }
-                    }
-
-                    if (bestMove) {
-                        $('#ai-assistant-text').html(`Sugiero mover:<br><b style="font-size:1.4rem; color:#8e44ad;">${bestMove.from} ➔ ${bestMove.to}</b><br><span style="font-size:0.9rem; color:#7f8c8d;">(${bestMove.san})</span>`);
-
-                        // Resaltar la jugada en el tablero
-                        removeHighlights();
-                        $('#board .square-' + bestMove.from).addClass('highlight-move');
-                        $('#board .square-' + bestMove.to).addClass('highlight-move');
-                        
-                        // Ocultar asistente después de 5 segundos
-                        setTimeout(() => {
-                            $('#ai-assistant-container').fadeOut(500);
-                        }, 5000);
-                    } else {
-                        $('#ai-assistant-text').text('No encontré jugadas útiles.');
-                        setTimeout(() => {
-                            $('#ai-assistant-container').fadeOut(500);
-                        }, 3000);
-                    }
-                } catch (err) {
-                    console.error('Error IA:', err);
-                    $('#ai-assistant-text').text('Ocurrió un error al analizar.');
-                    setTimeout(() => {
-                        $('#ai-assistant-container').fadeOut(500);
-                    }, 3000);
-                }
-            }, 500);
         }
 
         
@@ -2130,7 +1987,6 @@ function iniciarRetos() {
                 // socket.emit('recoverTournament', code); // Opcional: refrescar datos
             } else {
                 $('#teacher-dashboard-view').show();
-                $('#teacher-premium-btn').show();
             }
         }
 

@@ -495,27 +495,6 @@
             "stars": 0,
             "avatar": "👤",
             "pushSubscription": null
-        },
-        "test2": {
-            "password": "1234",
-            "elo": 400,
-            "stars": 0,
-            "avatar": "👤",
-            "pushSubscription": null
-        },
-        "yovanny": {
-            "password": "1717",
-            "elo": 400,
-            "stars": 0,
-            "avatar": "👤",
-            "pushSubscription": null
-        },
-        "Profe Josue": {
-            "password": "1717",
-            "elo": 400,
-            "stars": 0,
-            "avatar": "👤",
-            "pushSubscription": null
         }
     }
 }

@@ -141,12 +141,6 @@
             z-index: 90;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
-
         .highlight-capture::after {
             content: '';
             position: absolute;
@@ -560,7 +554,7 @@
     <script src="vendor/chessboard-1.0.0.min.js"></script>
 
     <!-- SOCKET.IO CDN (Más compatible con Render/AppsGeyser) -->
-    <script src="vendor/socket.io.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="vendor/sweetalert2.all.min.js"></script>
 
     
@@ -616,7 +610,6 @@
         <div id="teacher-dashboard-view" class="info-card">
             <div class="teacher-card"><span class="avatar-big">👨‍🏫</span><br><b>PANEL PROFE</b></div>
             <button class="btn-green" onclick="crearTorneo()">⚔️ Nuevo Torneo</button>
-            <button id="teacher-premium-btn" class="btn-purple" onclick="generarCodigoPremium()" style="margin-top: 8px; display: none;">🔑 Código IA Premium</button>
             <div id="recover-section" style="display:none; margin-top:10px;">
                 <button class="btn-yellow" onclick="recuperarTorneoLocal()">🔄 Recuperar Torneo Activo</button>
             </div>
@@ -784,7 +777,6 @@
                 PIZARRA</button>
             <button id="btn-style" class="btn-teal" onclick="toggleSkin()" style="margin-top:8px; font-size:0.8rem;">🎨
                 ESTILO (PREMIO)</button>
-            <button id="btn-ai-coach" class="btn-purple" onclick="clickAICoach()" style="margin-top:8px;">🤖 ENTRENADOR IA (PREMIUM)</button>
             <button onclick="borrarRol()"
                 style="background:#7f8c8d; font-size:10px; width:auto; padding:5px; margin-top:15px;">⚠️ SALIR</button>
         
@@ -842,7 +834,6 @@
                     <button onclick="iniciarBot()" style="width:auto; margin:0; padding:5px 10px;">🔄</button>
                     <button class="btn-red" onclick="volverMenu()" style="width:auto; padding:5px 10px; font-size:12px; margin:0 0 0 5px;">✖</button>
                 </div>
-                <button id="bot-ai-hint-btn" class="btn-purple" onclick="solicitarIA()" style="margin-top: 8px; display: none; width: 100%;">🤖 CONSEJO DE LA IA</button>
             </div>
             <div id="puzzle-header" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -872,14 +863,6 @@
         </div>
 
         <div id="board-wrapper">
-            <div id="ai-assistant-container" style="position: absolute; top: -70px; right: 0; display: none; z-index: 100; align-items: flex-end;">
-                <div id="ai-assistant-bubble" style="background: #fff; border: 2px solid #8e44ad; border-radius: 10px; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); font-size: 0.85rem; color: #333; margin-right: 5px; position: relative; max-width: 220px; line-height: 1.2;">
-                    <span id="ai-assistant-text">Analizando...</span>
-                    <div style="position: absolute; right: -8px; bottom: 15px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid #8e44ad;"></div>
-                    <div style="position: absolute; right: -5px; bottom: 15px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid #fff;"></div>
-                </div>
-                <div style="font-size: 45px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); animation: float 2s ease-in-out infinite;">🤖</div>
-            </div>
             <div id="board"></div>
             <div id="board-overlay"></div>
         </div>

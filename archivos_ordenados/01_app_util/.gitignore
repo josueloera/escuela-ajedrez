@@ -7,8 +7,9 @@ respaldos/
 *.rar
 *.exe
 
-# PDFs grandes (mayores a 50MB se omiten)
-# Los PDFs de la biblioteca están incluidos (todos < 50MB)
+# PDFs (libros de ajedrez, demasiado grandes para GitHub)
+*.pdf
+libros/
 
 # Logs
 npm-debug.log*
