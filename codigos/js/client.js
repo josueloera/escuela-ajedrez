@@ -78,6 +78,15 @@
         var timeWhite = 600;
         var timeBlack = 600;
         var timerInterval = null;
+
+        // --- HELPER PARA RENDERIZAR AVATAR ---
+        function renderAvatar(avatar) {
+            if (!avatar) return "👤";
+            if (avatar.startsWith('/uploads/')) {
+                return `<img src="${avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;">`;
+            }
+            return avatar;
+        }
         var selectedAvatarTemp = avatars[0];
 
         var finalTournamentData = null;
@@ -927,7 +936,9 @@
 
             var senderName = userProfile.name || "Anónimo"; // Handle anonymous users
             var senderAvatar = userProfile.avatar || "👤"; // Default avatar for anonymous
-            socket.emit('chat', { room: room, msg: msg, name: senderName, avatar: senderAvatar });
+            
+            var formattedMsg = `${renderAvatar(senderAvatar)} ${senderName}: ${msg}`;
+            socket.emit('chat', { room: room, msg: formattedMsg });
             $('#chat-input').val('');
         }
 
@@ -1030,7 +1041,7 @@
             socket.on('updatePlayerList', function (players) {
                 // Update Teacher View
                 $('#lobby-players').empty();
-                players.forEach(p => $('#lobby-players').append(`<span class="player-chip">${p.avatar} ${p.name}</span>`));
+                players.forEach(p => $('#lobby-players').append(`<span class="player-chip">${renderAvatar(p.avatar)} ${p.name}</span>`));
                 $('#player-count').text(players.length);
 
                 // Update Sidebar List
@@ -1039,7 +1050,7 @@
                     $('#online-users-list').append(`
                         <div class="online-user-item">
                             <span class="online-dot"></span>
-                            <span>${p.avatar} ${p.name}</span>
+                            <span>${renderAvatar(p.avatar)} ${p.name}</span>
                         </div>
                     `);
                 });
@@ -1062,7 +1073,7 @@
 
                 players.forEach((p, index) => {
                     var cls = index === 0 ? 'podium-gold' : (index === 1 ? 'podium-silver' : (index === 2 ? 'podium-bronze' : ''));
-                    var row = `<tr class="${cls}"><td>${index + 1}</td><td>${p.avatar} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`;
+                    var row = `<tr class="${cls}"><td>${index + 1}</td><td>${renderAvatar(p.avatar)} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`;
                     if (tbody.length) tbody.append(row);
                     if (studentBody.length) studentBody.append(row);
                 });
@@ -1087,7 +1098,7 @@
                 }
                 players.forEach((p, index) => {
                     var cls = index === 0 ? 'podium-gold' : (index === 1 ? 'podium-silver' : (index === 2 ? 'podium-bronze' : ''));
-                    $('#final-standings-body').append(`<tr class="${cls}"><td>${index + 1}º</td><td>${p.avatar} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`);
+                    $('#final-standings-body').append(`<tr class="${cls}"><td>${index + 1}º</td><td>${renderAvatar(p.avatar)} ${p.name}</td><td>${p.score}</td><td>${p.buchholz}</td></tr>`);
                 });
                 localStorage.removeItem('activeTournament');
             });
@@ -1582,7 +1593,7 @@
                 const senderAvatar = (userProfile && userProfile.avatar) ? userProfile.avatar : "👤";
                 socket.emit('chat', {
                     room: r,
-                    msg: `${senderAvatar} ${senderName}: ${t}`
+                    msg: `${renderAvatar(senderAvatar)} ${senderName}: ${t}`
                 });
                 $('#chat-input').val('');
             }
@@ -2224,7 +2235,7 @@ function iniciarRetos() {
                 const row = `
             <tr style="${index < 3 ? 'background:rgba(241, 196, 15, 0.1);' : ''}">
                 <td>${icon || (index + 1)}</td>
-                <td>${p.avatar} ${p.name}</td>
+                <td>${renderAvatar(p.avatar)} ${p.name}</td>
                 <td style="font-weight:bold; color:#f1c40f;">${p.score}</td>
             </tr>
         `;
